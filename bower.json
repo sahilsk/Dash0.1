@@ -1,0 +1,9 @@
+{
+  "name": "Dash-v0.1.0",
+  "private": true,
+  "version": "0.1.0",
+  "dependencies": {
+    "bootstrap": "~3.0.0",
+    "jquery": "~2.1.1"
+  }
+}

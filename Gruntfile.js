@@ -46,7 +46,7 @@ module.exports = function(grunt) {
         // you run `grunt wiredep`
         src: [
           'Server/views/**/*.html',    // .html support...
-          'Server/views/layout.jade'  // .jade support...
+          'Server/views/*.jade'  // .jade support...
        //  ,'Server/styles/main.scss'
         ],
 
@@ -60,17 +60,29 @@ module.exports = function(grunt) {
         ignorePath: '',
         overrides: {}
       }
-  },
-    jade2js: {
-      compile: {
-        options: {
-          namespace: 'Templates'
-        },
-        files: {
-          'templates.js': 'Client/views/templates/*.jade'
-        }
-      }
     },
+    html2js: {
+      options: {
+        base: 'Client/views',
+        module: "DashApp",
+        target: 'js',
+        singleModule: true,
+        htmlmin: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+          removeEmptyAttributes: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true
+        }
+      },
+      main: {
+        src: ['Client/views/**/*.tpl.html'],
+        dest: 'Client/build/view/templates.js'
+      },
+    },    
     concat: {
       options: {
         banner: '<%= banner %>',
@@ -113,9 +125,6 @@ module.exports = function(grunt) {
         src: ['lib/**/*.js', 'test/**/*.js']
       }
     },
-    qunit: {
-      files: ['test/**/*.html']
-    }, 
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -131,11 +140,7 @@ module.exports = function(grunt) {
         options: {
           spawn: false // for grunt-contrib-watch v0.5.0+, "nospawn: true" for lower versions. Without this option specified express won't be reloaded
         }
-      },
-      jade2js: {
-        files: ['Client/views/templates/*.jade'],
-        tasks: ['jade2js:compile']
-      } 
+      }
     }
 
   });
@@ -143,16 +148,16 @@ module.exports = function(grunt) {
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-express-server');
-  grunt.loadNpmTasks('grunt-jade-plugin');
   grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadTasks('./html2js.js');
+
 
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
-  grunt.registerTask('server', ['express:dev', 'watch'])
+  grunt.registerTask('default', ['jshint',  'concat', 'uglify']);
+  grunt.registerTask('server', [  'html2js','express:dev', 'watch'])
 
 };

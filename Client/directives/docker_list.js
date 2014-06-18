@@ -1,14 +1,12 @@
-var app = require("./app");
+var app = require("../app");
 var templates = require("../build/view/templates");
 
 
 
-app  = app.directive('dockerList', ['$scope', '$templateCache', function($scope){
+module.exports = app.directive('dockerList',  function(){
 	return {
-
-		templateUrl: 
-
-	}
-	
-	
-}]);
+		restrict: 'E',
+		templateUrl:  "dockers/list.tpl.html"
+	} 
+	 
+});

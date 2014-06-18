@@ -1,0 +1,31 @@
+ <h1>New Docker</h1>
+
+ <div ng-controller="DockerNewCtrl">
+
+ <div class="alert alert-dismissable  alert-{{notification.type}}" ng-hide="notification === 'undefined' || notification.type === null">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    {{ notification.message }}
+</div>
+
+<form name='newDockerForm' class="cssForm" role="form"  ng-submit="newDockerForm.$valid &&  submit()"  novalidate>
+    <div class="form-group ">
+        <label class="control-label" for="hostname">Nick</label>
+        <input name="title" type="text" class="form-control" ng-model="docker.title" placeholder='eg. Mickie'  required >
+    </div>
+
+    <div class="form-group ">
+        <label class="control-label" for="hostname">Hostname</label>
+        <input name="hostname" type="text" class="form-control" ng-model="docker.hostname" placeholder='eg. 10.2.1.1'  required >
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="port">Port</label>
+        <input name="port" type="number" class="form-control" ng-model="docker.port"  placeholder='eg. 4273' pattern="[0-9]*[0-9]+" >
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="healthCheckPath">Health check path</label>
+        <input name="healthCheckPath" type="text" class="form-control" ng-model="docker.healthCheckPath" placeholder='eg. /ping'>
+    </div>
+    <button type="button" class="btn btn-outline btn-primary"  ng-click="newDockerForm.$valid &&  submit()" > Submit  </button>
+
+</form> 
+</div>  

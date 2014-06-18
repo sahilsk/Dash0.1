@@ -1,0 +1,16 @@
+.cssForm {
+  transition:0.5s linear all;
+  background: white;
+}
+.cssForm .ng-invalid {
+  border: red;
+  color:red;
+  background: rgb(252, 245, 246)	;
+}
+
+.cssForm .ng-valid {
+  border: green;
+  color:rgb(139, 184, 139);
+  background: rgb(245, 250, 245);
+  text-shadow: 1px 1px 1px #ccc;
+}

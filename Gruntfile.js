@@ -64,7 +64,7 @@ module.exports = function(grunt) {
     html2js: {
       options: {
         base: 'Client/views',
-        module: "DashApp",
+        module: "templates-main",
         target: 'js',
         singleModule: true,
         htmlmin: {
@@ -79,9 +79,22 @@ module.exports = function(grunt) {
         }
       },
       main: {
-        src: ['Client/views/**/*.tpl.html'],
+        src: ['Client/views/**/*.html'],
         dest: 'Client/build/view/templates.js'
       },
+    },    
+    browserify: {
+      build: {
+        files: {
+          'Client/build/js/bundle.js': ['Client/main.js']
+        },
+        options: {
+          transform: ['browserify-shim'],
+          alias: [
+            'Client/app.js:app'
+          ]
+        }
+      }
     },    
     concat: {
       options: {
@@ -140,7 +153,21 @@ module.exports = function(grunt) {
         options: {
           spawn: false // for grunt-contrib-watch v0.5.0+, "nospawn: true" for lower versions. Without this option specified express won't be reloaded
         }
-      }
+      },
+      html2js: {
+        files: [
+          'Client/views/**/*.html',
+          '!Client/build/**/*.*'
+        ],
+        tasks: ['html2js']
+      },
+      javascripts: {
+        files: [
+          'Client/**/*.js',
+          '!Client/build/**/*.*'
+        ],
+        tasks: ['browserify']
+      },
     }
 
   });
@@ -152,12 +179,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-express-server');
   grunt.loadNpmTasks('grunt-wiredep');
-  grunt.loadTasks('./html2js.js');
+  grunt.loadNpmTasks('grunt-html2js');
+  grunt.loadNpmTasks('grunt-browserify');
+
 
 
 
   // Default task.
   grunt.registerTask('default', ['jshint',  'concat', 'uglify']);
-  grunt.registerTask('server', [  'html2js','express:dev', 'watch'])
+  grunt.registerTask('server', [ 'html2js','browserify', 'express:dev', 'watch']);
 
 };

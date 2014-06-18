@@ -16,10 +16,12 @@
 
     <!-- SB Admin CSS - Include with every page -->
     <link href="/template/css/sb-admin.css" rel="stylesheet">
+    <link href="/stylesheets/dash.css" rel="stylesheet">
+
 
 </head>
 
-<body>
+<body  ng-app="DashApp">
 
     <div id="wrapper">
 
@@ -266,10 +268,10 @@
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Docker Hosts<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="/dockers"> List Dockers </a>
+                                    <a ui-sref="dockers.list"> List Dockers </a>
                                 </li>
                                 <li>
-                                    <a href="/dockers/new"> Add New Host</a>
+                                    <a ui-sref="dockers.new"> Add New Docker</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -359,6 +361,9 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
+            <ng-view></ng-view>
+            <div ui-view></div>
+
 
              <%- body %>
         </div>
@@ -376,6 +381,8 @@
 
     <!-- SB Admin Scripts - Include with every page -->
     <script src="/template/js/sb-admin.js"></script>
+    <script src="/build/js/bundle.js"></script>
+
 
     <!-- Page-Level Demo Scripts - Blank - Use for reference -->
 

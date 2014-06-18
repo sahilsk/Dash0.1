@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var docker = require("./controllers/dockers");
 var index = require("./controllers/index");
+var api = require("./controllers/api");
+
 
 
 var app = express();
@@ -27,6 +29,7 @@ app.use("/build", express.static(path.join(__dirname, '../Client/build')));
 
 app.use('/', index);
 app.use('/dockers', docker);
+app.use('/api', api);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

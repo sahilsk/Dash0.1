@@ -1,0 +1,37 @@
+
+<div class="panel panel-default" id="imagesTable">
+	<div class="panel-heading" >
+		<span class="glyphicon glyphicon-list-alt"> </span>
+		&nbsp; Images List  : {{docker.id}}
+
+		<input type='text' ng-model='filterImage'  style='float: right;'/>
+	</div>
+	<div class="panel-body table-responsive">
+		<table class="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th> # </th>
+					<th> ID  </th>
+					<th> RepoTags  </th>
+					<th> Created  </th>
+					<th> Size  </th>
+					<th> Virtual Size  </th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr ng-repeat="image in images | orderBy: image.Created | filter:filterImage"  >
+						<td> {{ $index + 1 }} </td>
+						<td> <a  image-id="{{ image.Id }}"	 title="{{ image.Id }}" > 
+								<span class="label label-primary"> {{ image.Id.substring(0, 14) }} </span> 
+							</a>
+						</td>
+						<td> {{ image.RepoTags }} </td>
+						<td> {{ image.Created }}  </td>
+						<td> {{ image.Size }} </td>
+						<td> {{ image.VirtualSize }}  </td>
+					</tr>
+
+			</tbody>
+	</table>
+	</div>
+</div>

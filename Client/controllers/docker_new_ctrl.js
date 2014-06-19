@@ -3,8 +3,7 @@ var _ = require("underscore");
 var app = require("../app");
 
 
-
-module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', 'DockerFactory', function($scope, $http, DockerFactory){
+module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', '$location', 'DockerFactory', function( $scope, $http,$location, DockerFactory){
 		$scope.docker = {};
 
 		$scope.submit = function(){
@@ -19,18 +18,12 @@ module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', 'DockerFac
 			DockerFactory.save( $scope.docker).then( function(res){
 					if(res.err){
 						$scope.response = res.err;
-						$scope.notification = {
-							type: 'danger',
-							message:' Failed to create docker: '+  res.err
-						}
+						//toaster.pop('danger', ' Failed to create docker ',  res.err);
 					}else{
-
 						$scope.docker.response = "Docker created successfully.!!!";
-						$scope.notification = {
-							type: 'success',
-							message:' Docker created successfully'
-						};
+						//toaster.pop('success', ' Success', 'Docker created successfully');
 						$scope.docker = {};
+						$location.path("/dockers/list");
 					}
 
 			}.bind(this));

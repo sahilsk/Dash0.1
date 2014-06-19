@@ -36,7 +36,9 @@
     "config": "~0.4.36",
     "angular-ui-router": "~0.2.10",
     "dockerode": "~2.0.0",
-    "request": "~2.36.0"
+    "request": "~2.36.0",
+    "angular-loading-bar": "~0.4.3",
+    "angular-module-animate": "~1.2.17"
   },
   "browserify-shim": {},
   "browserify": {

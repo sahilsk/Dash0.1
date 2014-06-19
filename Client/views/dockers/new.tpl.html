@@ -2,9 +2,9 @@
 
  <div ng-controller="DockerNewCtrl">
 
- <div class="alert alert-dismissable  alert-{{notification.type}}" ng-hide="notification === 'undefined' || notification.type === null">
+ <div class="alert alert-dismissable  alert-{{$root.notification.type}}" ng-hide="$root.notification === 'undefined' || $root.notification.type === null">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-    {{ notification.message }}
+    {{ $root.notification.message }}
 </div>
 
 <form name='newDockerForm' class="cssForm" role="form"  ng-submit="newDockerForm.$valid &&  submit()"  novalidate>

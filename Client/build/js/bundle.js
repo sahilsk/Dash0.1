@@ -1,12 +1,18 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"app":[function(require,module,exports){
-module.exports=require('adpf6y');
-},{}],"adpf6y":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"adpf6y":[function(require,module,exports){
 var angular = require('angular');
 var uiRouter = require('angular-ui-router');
+var angular_animate = require('angular-module-animate');
+
+require('angular-loading-bar');
+
+
+//var toaster = require("./lib/toaster");
+
 require('angular-router-browserify')(angular);
 require("./build/view/templates.js");
 
-var app = angular.module('DashApp', [uiRouter, 'ngRoute', 'templates-main']);
+
+var app = angular.module('DashApp', [uiRouter, 'templates-main']);
 
 app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', function( $stateProvider, $urlRouterProvider, $locationProvider){
 
@@ -28,13 +34,46 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			url:'/new',
 			controller: "DockerNewCtrl",
 			templateUrl: "dockers/new.tpl.html"
+		})
+
+		.state('dockers.list.panel', {
+			resolve:{
+				currentDocker: function($http, $stateParams) {
+				      		return $http
+								.get('/api/dockers/'+ $stateParams.id )
+								.success( function(res){
+									console.log( res);
+									if( res.errors ){
+										return null;
+									}
+									else{
+										return res.data;
+									}
+								})
+								.error( function(err){
+								 	console.log("Error :", err);
+								});
+				    	},
+			},
+			views:{
+				'images': {
+					templateUrl: 'dockers/images.tpl.html',
+					controller: "DockerShowCtrl"
+				},
+				'containers': {
+					templateUrl: 'dockers/containers.tpl.html',
+					controller: "DockerShowCtrl"				
+				}
+			},
+			url: '/:id'
+			
 		});
 	
 	
 	
 }] );
 
-app.run(['$rootScope', '$location', '$route', function($rootScope, $location, $route) {
+app.run(['$rootScope', '$location', function($rootScope, $location) {
 
 	$rootScope.$on('$stateChangeStart', function(){
 		console.log("state changing to ", $location.path());
@@ -49,12 +88,18 @@ app.run(['$rootScope', '$location', '$route', function($rootScope, $location, $r
 
 
 module.exports = app;
-},{"./build/view/templates.js":3,"angular":11,"angular-router-browserify":9,"angular-ui-router":10}],3:[function(require,module,exports){
+},{"./build/view/templates.js":3,"angular":16,"angular-loading-bar":12,"angular-module-animate":13,"angular-router-browserify":14,"angular-ui-router":15}],"app":[function(require,module,exports){
+module.exports=require('adpf6y');
+},{}],3:[function(require,module,exports){
 module.exports = angular.module('templates-main', []).run(['$templateCache', function($templateCache) {
+  $templateCache.put("dockers/containers.tpl.html",
+    "<div class=\"panel panel-default\"><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Containers List</div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-borderedf imageTable\"><thead><tr><th>#</th><th>ID</th><th>Image</th><th>Command</th><th>Created</th><th>Status</th><th>Ports</th><th>SizeRw</th><th>SizeRootFs</th><th>Names</th></tr></thead><tbody><tr ng-repeat=\"container in containers\"><td>{{ $index + 1 }}</td><td><a container-id=\"{{ container.Id }}\"><span class=\"label label-info\" title=\"{{ container.Id }}\">{{ container.Id}}</span></a></td><td>{{ container.Image }}</td><td>{{ container.Command }}</td><td>{{ container.Created }}</td><td>{{ container.Status }}</td><td>{{ container.Ports }}</td><td>{{ container.SizeRw }}</td><td>{{ container.SizeRootFs }}</td><td>{{ container.Names }}</td><td><a href=# class=\"label label-warning action-refresh\" container-id=\"{{ container.Id }}\"><span class=\"glyphicon glyphicon-search\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp;</td></tr></tbody></table></div></div>");
+  $templateCache.put("dockers/images.tpl.html",
+    "<div class=\"panel panel-default\" id=imagesTable><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Images List : {{docker.id}} <input ng-model=filterImage style=\"float: right\"></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th>#</th><th>ID</th><th>RepoTags</th><th>Created</th><th>Size</th><th>Virtual Size</th></tr></thead><tbody><tr ng-repeat=\"image in images | orderBy: image.Created | filter:filterImage\"><td>{{ $index + 1 }}</td><td><a image-id=\"{{ image.Id }}\" title=\"{{ image.Id }}\"><span class=\"label label-primary\">{{ image.Id.substring(0, 14) }}</span></a></td><td>{{ image.RepoTags }}</td><td>{{ image.Created }}</td><td>{{ image.Size }}</td><td>{{ image.VirtualSize }}</td></tr></tbody></table></div></div>");
   $templateCache.put("dockers/list.tpl.html",
-    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\"><div class=panel-heading>DataTables Advanced Tables</div><div class=panel-body><div class=table-responsive><table class=\"table table-striped table-bordered table-hover\" id=dataTables-example><thead><tr><th>#</th><th>name</th><th>host</th><th>port</th><th>Images</th><th>containers</th><th>Memory Limit</th><th>Health Status</th><th><a ui-sref=dockers.new class=\"label label-primary\"><span class=\"glyphicon glyphicon-plus\"></span></a></th></tr></thead><tbody><tr ng-repeat=\"docker in dockers\"><td>{{ $index + 1 }}</td><td>{{ docker.title }}</td><td>{{ docker.host }}</td><td>{{ docker.port }}</td><td>{{docker.Images}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof docker.Images != 'undefined'\"></td><td>{{docker.Containers}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof docker.Containers !== 'undefined'\"></td><td>{{docker.MemoryLimit}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof docker.MemoryLimit !== 'undefined' \"></td><td>{{docker.HealthStatus}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof docker.HealthStatus !== 'undefined'\"></td><td><a href=# class=\"label label-primary action-refresh\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-refresh\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp; <a href=# class=\"label label-success action-explore\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> &nbsp; <a href=# class=\"label label-danger action-delete\" docker-id=\"{{ docker.id }}\" ng-click=destroy(docker.id)><span class=\"glyphicon glyphicon-remove\"></span></a></td></tr></tbody></table></div></div></div></div></div>");
+    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\"><div class=panel-heading>DataTables Advanced Tables</div><div class=panel-body><div class=table-responsive><table class=\"table table-striped table-bordered table-hover\" id=dataTables-example><thead><tr><th>#</th><th>name</th><th>host</th><th>port</th><th>Images</th><th>containers</th><th>Memory Limit</th><th>Health Status</th><th><a ui-sref=dockers.new class=\"label label-primary\"><span class=\"glyphicon glyphicon-plus\"></span></a></th></tr></thead><tbody><tr ng-repeat=\"docker in dockers\"><td>{{ $index + 1 }}</td><td>{{ docker.title }}</td><td>{{ docker.host }}</td><td>{{ docker.port }}</td><td>{{docker.Images}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof(docker.Images) != 'undefined'\"></td><td>{{docker.Containers}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof(docker.Containers) !== 'undefined'\"></td><td>{{docker.MemoryLimit}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof(docker.MemoryLimit) !== 'undefined' \"></td><td>{{docker.HealthStatus}} <img src=/images/refreshing_x24.gif alt=loading... ng-show=\" {{typeof(docker.HealthStatus) === 'undefined'}} \"></td><td><a href=# class=\"label label-primary action-refresh\" ng-click=getInfo(docker)><span class=\"glyphicon glyphicon-refresh\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp; <a ui-sref=\"dockers.list.panel({id: docker.id })\" class=\"label label-success action-explore\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> &nbsp; <a href=# class=\"label label-danger action-delete\" docker-id=\"{{ docker.id }}\" ng-click=destroy(docker.id)><span class=\"glyphicon glyphicon-remove\"></span></a></td></tr></tbody></table></div></div></div></div></div><div class=row><div class=col-lg-12><div ui-view=images></div><div ui-view=containers></div></div></div>");
   $templateCache.put("dockers/new.tpl.html",
-    "<h1>New Docker</h1><div ng-controller=DockerNewCtrl><div class=\"alert alert-dismissable alert-{{notification.type}}\" ng-hide=\"notification === 'undefined' || notification.type === null\"><button type=button class=close data-dismiss=alert aria-hidden=true>×</button> {{ notification.message }}</div><form name=newDockerForm class=cssForm role=form ng-submit=\"newDockerForm.$valid &&  submit()\" novalidate><div class=form-group><label class=control-label for=hostname>Nick</label><input name=title class=form-control ng-model=docker.title placeholder=\"eg. Mickie\" required></div><div class=form-group><label class=control-label for=hostname>Hostname</label><input name=hostname class=form-control ng-model=docker.hostname placeholder=\"eg. 10.2.1.1\" required></div><div class=form-group><label class=control-label for=port>Port</label><input name=port type=number class=form-control ng-model=docker.port placeholder=\"eg. 4273\" pattern=[0-9]*[0-9]+></div><div class=form-group><label class=control-label for=healthCheckPath>Health check path</label><input name=healthCheckPath class=form-control ng-model=docker.healthCheckPath placeholder=\"eg. /ping\"></div><button type=button class=\"btn btn-outline btn-primary\" ng-click=\"newDockerForm.$valid &&  submit()\">Submit</button></form></div>");
+    "<h1>New Docker</h1><div ng-controller=DockerNewCtrl><div class=\"alert alert-dismissable alert-{{$root.notification.type}}\" ng-hide=\"$root.notification === 'undefined' || $root.notification.type === null\"><button type=button class=close data-dismiss=alert aria-hidden=true>×</button> {{ $root.notification.message }}</div><form name=newDockerForm class=cssForm role=form ng-submit=\"newDockerForm.$valid &&  submit()\" novalidate><div class=form-group><label class=control-label for=hostname>Nick</label><input name=title class=form-control ng-model=docker.title placeholder=\"eg. Mickie\" required></div><div class=form-group><label class=control-label for=hostname>Hostname</label><input name=hostname class=form-control ng-model=docker.hostname placeholder=\"eg. 10.2.1.1\" required></div><div class=form-group><label class=control-label for=port>Port</label><input name=port type=number class=form-control ng-model=docker.port placeholder=\"eg. 4273\" pattern=[0-9]*[0-9]+></div><div class=form-group><label class=control-label for=healthCheckPath>Health check path</label><input name=healthCheckPath class=form-control ng-model=docker.healthCheckPath placeholder=\"eg. /ping\"></div><button type=button class=\"btn btn-outline btn-primary\" ng-click=\"newDockerForm.$valid &&  submit()\">Submit</button></form></div>");
 }]);
 
 },{}],4:[function(require,module,exports){
@@ -64,7 +109,7 @@ var _ = require("underscore");
 require("../services/docker_factory.js");
 
 
-module.exports = app.controller('DockerListCtrl', ['$scope','DockerFactory', function($scope, DockerFactory){
+module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','DockerFactory', function( $rootScope, $scope, DockerFactory){
 		$scope.dockers =[];
 		$scope.dockers = DockerFactory.dockers;
 
@@ -84,14 +129,14 @@ module.exports = app.controller('DockerListCtrl', ['$scope','DockerFactory', fun
 						console.log("Record deleted");
 						DockerFactory.dockers = _.reject( DockerFactory.dockers, function(docker){ return docker.id == id; });
 						$scope.dockers = DockerFactory.dockers;
-						$scope.getDockerStatus();
 						console.log("Total Dockers: ", $scope.dockers.length);
-
+						//toaster.pop('success', 'Docker Deleted ',  'Docker removed successfully');
+						
 					}
 					else{
 						console.log("Error deleting docker ", data.errors);
+						//toaster.pop( 'alert', "Error deleting docker " , data.errors);					
 					}
-
 				});
 			}
 			
@@ -103,14 +148,37 @@ module.exports = app.controller('DockerListCtrl', ['$scope','DockerFactory', fun
 					DockerFactory
 						.info(docker.id)
 						.then( function(res){
-					 		docker.Images = res.data.data.Images;			 		
-					 		docker.Containers = res.data.data.Containers;
-					 		docker.MemoryLimit = res.data.data.MemoryLimit;
-					 		docker.HealthStatus = res.data.data.HealthStatus;
-					 		console.log(res);
+							if( res.data.data != null){
+						 		docker.Images = res.data.data.Images;			 		
+						 		docker.Containers = res.data.data.Containers;
+						 		docker.MemoryLimit = res.data.data.MemoryLimit;
+						 		docker.HealthStatus = res.data.data.HealthStatus;
+						 		console.log(res);
+						 	}
 				 		});
 
 			});
+
+
+		}
+
+		$scope.getInfo = function( docker){
+			console.log("getInfo : ", docker);
+				DockerFactory
+						.info(docker.id)
+						.then( function(res){
+							if( res.data.data != null){
+						 		docker.Images = res.data.data.Images;			 		
+						 		docker.Containers = res.data.data.Containers;
+						 		docker.MemoryLimit = res.data.data.MemoryLimit;
+						 		docker.HealthStatus = res.data.data.HealthStatus;
+						 		console.log(res);
+						 	}
+				 
+				});
+		}
+
+		$scope.explore = function( docker){
 
 
 		}
@@ -119,14 +187,13 @@ module.exports = app.controller('DockerListCtrl', ['$scope','DockerFactory', fun
 }]);
 
 
-},{"../app":"adpf6y","../services/docker_factory.js":8,"underscore":13}],5:[function(require,module,exports){
+},{"../app":"adpf6y","../services/docker_factory.js":10,"underscore":18}],5:[function(require,module,exports){
 
 var _ = require("underscore");
 var app = require("../app");
 
 
-
-module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', 'DockerFactory', function($scope, $http, DockerFactory){
+module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', '$location', 'DockerFactory', function( $scope, $http,$location, DockerFactory){
 		$scope.docker = {};
 
 		$scope.submit = function(){
@@ -141,18 +208,12 @@ module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', 'DockerFac
 			DockerFactory.save( $scope.docker).then( function(res){
 					if(res.err){
 						$scope.response = res.err;
-						$scope.notification = {
-							type: 'danger',
-							message:' Failed to create docker: '+  res.err
-						}
+						//toaster.pop('danger', ' Failed to create docker ',  res.err);
 					}else{
-
 						$scope.docker.response = "Docker created successfully.!!!";
-						$scope.notification = {
-							type: 'success',
-							message:' Docker created successfully'
-						};
+						//toaster.pop('success', ' Success', 'Docker created successfully');
 						$scope.docker = {};
+						$location.path("/dockers/list");
 					}
 
 			}.bind(this));
@@ -161,7 +222,42 @@ module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', 'DockerFac
 		}
 }]);
 
-},{"../app":"adpf6y","underscore":13}],6:[function(require,module,exports){
+},{"../app":"adpf6y","underscore":18}],6:[function(require,module,exports){
+
+var _ = require("underscore");
+var app = require("../app");
+
+
+module.exports  = app.controller('DockerShowCtrl', 
+		[ '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory', 'currentDocker',
+		 function(  $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
+			$scope.images = [];
+
+			$scope.docker = currentDocker.data.data;
+			ImageFactory.docker = $scope.docker;
+	 		ContainerFactory.docker = $scope.docker;
+
+			console.log( $scope.docker );
+
+			ImageFactory.getImages().then( function(res){
+				$scope.images = res.data.data.images;
+				$scope.info = res.data.data.info;
+				$scope.version = res.data.data.version;
+			 	console.log("Images: ", res.data.data);
+
+			});
+
+			ContainerFactory.getContainers().then( function(res){
+				$scope.containers = res.data.data.containers
+				console.log( "Containers: ", res.data);
+
+			})
+
+		
+}
+]);
+
+},{"../app":"adpf6y","underscore":18}],7:[function(require,module,exports){
 var app = require("../app");
 var templates = require("../build/view/templates");
 
@@ -174,26 +270,69 @@ module.exports = app.directive('dockerList',  function(){
 	} 
 	 
 });
-},{"../app":"adpf6y","../build/view/templates":3}],7:[function(require,module,exports){
+},{"../app":"adpf6y","../build/view/templates":3}],8:[function(require,module,exports){
 
 var angular = require("angular");
 var app = require("./app");
 
 require("./controllers/docker_list_ctrl");
 require("./controllers/docker_new_ctrl");
+require("./controllers/docker_show_ctrl");
+
 require("./directives/docker_list");
 
 require("./services/docker_factory");
+require("./services/image_factory");
+require("./services/container_factory");
 
 
 
 
 
-
+/*
 window.onload = function () {
   module.exports = angular.bootstrap(document, ['DashApp']);
 };
-},{"./app":"adpf6y","./controllers/docker_list_ctrl":4,"./controllers/docker_new_ctrl":5,"./directives/docker_list":6,"./services/docker_factory":8,"angular":11}],8:[function(require,module,exports){
+
+*/
+},{"./app":"adpf6y","./controllers/docker_list_ctrl":4,"./controllers/docker_new_ctrl":5,"./controllers/docker_show_ctrl":6,"./directives/docker_list":7,"./services/container_factory":9,"./services/docker_factory":10,"./services/image_factory":11,"angular":16}],9:[function(require,module,exports){
+var app = require("../app");
+
+
+module.exports = app.factory("ContainerFactory", ['$http', function($http){
+	var ContainerFactory = {};
+
+	ContainerFactory.docker = null;
+	console.log()
+
+	ContainerFactory.info = function(id){
+
+
+	}
+
+	ContainerFactory.getContainers = function(){
+		if( !ContainerFactory.docker){
+			return [];
+		}
+		return $http
+				.get("/api/dockers/"+ ContainerFactory.docker.id + "/containers")
+				.success( function(res){
+					if( res.errors ){
+						console.log( "Error:" , res.errors);
+						return res;
+					}else{
+						console.log("Images: ", res.data);
+						return res.data;
+					}
+				});
+	}
+
+
+	
+	return ContainerFactory;
+
+}] );
+},{"../app":"adpf6y"}],10:[function(require,module,exports){
 var app = require("../app");
 
 
@@ -217,6 +356,22 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 			});
 
 	}
+
+	DockerFactory.find = function(id){
+		return $http
+				.get('/api/dockers/'+id)
+				.success( function(res){
+					if( res.errors )
+						return null;
+					else
+						return res.data
+				})
+				.error( function(err){
+				 	console.log("Error :", err);
+				})
+
+	}
+
 
 	DockerFactory.save = function( docker){
 		return $http
@@ -251,15 +406,385 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 				.error( function(err){
 				 	console.log("Error :", err);
 				})
+	}
 
-	}	
+	DockerFactory.getImages = function( id){
+			return $http
+					.get('/api/dockers/' + id + '/images')
+
+	}
 
 
 	
 	return DockerFactory;
 
 }] );
-},{"../app":"adpf6y"}],9:[function(require,module,exports){
+},{"../app":"adpf6y"}],11:[function(require,module,exports){
+var app = require("../app");
+
+
+module.exports = app.factory("ImageFactory", ['$http', function($http){
+	var ImageFactory = {};
+
+	ImageFactory.docker = null;
+	console.log()
+
+	ImageFactory.info = function(id){
+
+
+	}
+
+
+	ImageFactory.getImages = function(){
+		if( !ImageFactory.docker){
+			return [];
+		}
+		return $http
+				.get("/api/dockers/"+ ImageFactory.docker.id + "/images")
+				.success( function(res){
+					if( res.errors ){
+						console.log( "Error:" , res.errors);
+						return res;
+					}else{
+						console.log("Images: ", res.data);
+						return res.data;
+					}
+				});
+	}
+
+
+	
+	return ImageFactory;
+
+}] );
+},{"../app":"adpf6y"}],12:[function(require,module,exports){
+/*
+ * angular-loading-bar
+ *
+ * intercepts XHR requests and creates a loading bar.
+ * Based on the excellent nprogress work by rstacruz (more info in readme)
+ *
+ * (c) 2013 Wes Cruver
+ * License: MIT
+ */
+
+
+(function() {
+
+'use strict';
+
+// Alias the loading bar for various backwards compatibilities since the project has matured:
+angular.module('angular-loading-bar', ['cfp.loadingBarInterceptor']);
+angular.module('chieffancypants.loadingBar', ['cfp.loadingBarInterceptor']);
+
+
+/**
+ * loadingBarInterceptor service
+ *
+ * Registers itself as an Angular interceptor and listens for XHR requests.
+ */
+angular.module('cfp.loadingBarInterceptor', ['cfp.loadingBar'])
+  .config(['$httpProvider', function ($httpProvider) {
+
+    var interceptor = ['$q', '$cacheFactory', '$timeout', '$rootScope', 'cfpLoadingBar', function ($q, $cacheFactory, $timeout, $rootScope, cfpLoadingBar) {
+
+      /**
+       * The total number of requests made
+       */
+      var reqsTotal = 0;
+
+      /**
+       * The number of requests completed (either successfully or not)
+       */
+      var reqsCompleted = 0;
+
+      /**
+       * The amount of time spent fetching before showing the loading bar
+       */
+      var latencyThreshold = cfpLoadingBar.latencyThreshold;
+
+      /**
+       * $timeout handle for latencyThreshold
+       */
+      var startTimeout;
+
+
+      /**
+       * calls cfpLoadingBar.complete() which removes the
+       * loading bar from the DOM.
+       */
+      function setComplete() {
+        $timeout.cancel(startTimeout);
+        cfpLoadingBar.complete();
+        reqsCompleted = 0;
+        reqsTotal = 0;
+      }
+
+      /**
+       * Determine if the response has already been cached
+       * @param  {Object}  config the config option from the request
+       * @return {Boolean} retrns true if cached, otherwise false
+       */
+      function isCached(config) {
+        var cache;
+        var defaults = $httpProvider.defaults;
+
+        if (config.method !== 'GET' || config.cache === false) {
+          config.cached = false;
+          return false;
+        }
+
+        if (config.cache === true && defaults.cache === undefined) {
+          cache = $cacheFactory.get('$http');
+        } else if (defaults.cache !== undefined) {
+          cache = defaults.cache;
+        } else {
+          cache = config.cache;
+        }
+
+        var cached = cache !== undefined ?
+          cache.get(config.url) !== undefined : false;
+
+        if (config.cached !== undefined && cached !== config.cached) {
+          return config.cached;
+        }
+        config.cached = cached;
+        return cached;
+      }
+
+
+      return {
+        'request': function(config) {
+          // Check to make sure this request hasn't already been cached and that
+          // the requester didn't explicitly ask us to ignore this request:
+          if (!config.ignoreLoadingBar && !isCached(config)) {
+            $rootScope.$broadcast('cfpLoadingBar:loading', {url: config.url});
+            if (reqsTotal === 0) {
+              startTimeout = $timeout(function() {
+                cfpLoadingBar.start();
+              }, latencyThreshold);
+            }
+            reqsTotal++;
+            cfpLoadingBar.set(reqsCompleted / reqsTotal);
+          }
+          return config;
+        },
+
+        'response': function(response) {
+          if (!response.config.ignoreLoadingBar && !isCached(response.config)) {
+            reqsCompleted++;
+            $rootScope.$broadcast('cfpLoadingBar:loaded', {url: response.config.url});
+            if (reqsCompleted >= reqsTotal) {
+              setComplete();
+            } else {
+              cfpLoadingBar.set(reqsCompleted / reqsTotal);
+            }
+          }
+          return response;
+        },
+
+        'responseError': function(rejection) {
+          if (!rejection.config.ignoreLoadingBar && !isCached(rejection.config)) {
+            reqsCompleted++;
+            $rootScope.$broadcast('cfpLoadingBar:loaded', {url: rejection.config.url});
+            if (reqsCompleted >= reqsTotal) {
+              setComplete();
+            } else {
+              cfpLoadingBar.set(reqsCompleted / reqsTotal);
+            }
+          }
+          return $q.reject(rejection);
+        }
+      };
+    }];
+
+    $httpProvider.interceptors.push(interceptor);
+  }]);
+
+
+/**
+ * Loading Bar
+ *
+ * This service handles adding and removing the actual element in the DOM.
+ * Generally, best practices for DOM manipulation is to take place in a
+ * directive, but because the element itself is injected in the DOM only upon
+ * XHR requests, and it's likely needed on every view, the best option is to
+ * use a service.
+ */
+angular.module('cfp.loadingBar', [])
+  .provider('cfpLoadingBar', function() {
+
+    this.includeSpinner = true;
+    this.includeBar = true;
+    this.latencyThreshold = 100;
+    this.startSize = 0.02;
+    this.parentSelector = 'body';
+
+    this.$get = ['$document', '$timeout', '$animate', '$rootScope', function ($document, $timeout, $animate, $rootScope) {
+
+      var $parentSelector = this.parentSelector,
+        loadingBarContainer = angular.element('<div id="loading-bar"><div class="bar"><div class="peg"></div></div></div>'),
+        loadingBar = loadingBarContainer.find('div').eq(0),
+        spinner = angular.element('<div id="loading-bar-spinner"><div class="spinner-icon"></div></div>');
+
+      var incTimeout,
+        completeTimeout,
+        started = false,
+        status = 0;
+
+      var includeSpinner = this.includeSpinner;
+      var includeBar = this.includeBar;
+      var startSize = this.startSize;
+
+      /**
+       * Inserts the loading bar element into the dom, and sets it to 2%
+       */
+      function _start() {
+        var $parent = $document.find($parentSelector);
+        $timeout.cancel(completeTimeout);
+
+        // do not continually broadcast the started event:
+        if (started) {
+          return;
+        }
+
+        $rootScope.$broadcast('cfpLoadingBar:started');
+        started = true;
+
+        if (includeBar) {
+          $animate.enter(loadingBarContainer, $parent);
+        }
+
+        if (includeSpinner) {
+          $animate.enter(spinner, $parent);
+        }
+
+        _set(startSize);
+      }
+
+      /**
+       * Set the loading bar's width to a certain percent.
+       *
+       * @param n any value between 0 and 1
+       */
+      function _set(n) {
+        if (!started) {
+          return;
+        }
+        var pct = (n * 100) + '%';
+        loadingBar.css('width', pct);
+        status = n;
+
+        // increment loadingbar to give the illusion that there is always
+        // progress but make sure to cancel the previous timeouts so we don't
+        // have multiple incs running at the same time.
+        $timeout.cancel(incTimeout);
+        incTimeout = $timeout(function() {
+          _inc();
+        }, 250);
+      }
+
+      /**
+       * Increments the loading bar by a random amount
+       * but slows down as it progresses
+       */
+      function _inc() {
+        if (_status() >= 1) {
+          return;
+        }
+
+        var rnd = 0;
+
+        // TODO: do this mathmatically instead of through conditions
+
+        var stat = _status();
+        if (stat >= 0 && stat < 0.25) {
+          // Start out between 3 - 6% increments
+          rnd = (Math.random() * (5 - 3 + 1) + 3) / 100;
+        } else if (stat >= 0.25 && stat < 0.65) {
+          // increment between 0 - 3%
+          rnd = (Math.random() * 3) / 100;
+        } else if (stat >= 0.65 && stat < 0.9) {
+          // increment between 0 - 2%
+          rnd = (Math.random() * 2) / 100;
+        } else if (stat >= 0.9 && stat < 0.99) {
+          // finally, increment it .5 %
+          rnd = 0.005;
+        } else {
+          // after 99%, don't increment:
+          rnd = 0;
+        }
+
+        var pct = _status() + rnd;
+        _set(pct);
+      }
+
+      function _status() {
+        return status;
+      }
+
+      function _complete() {
+        $rootScope.$broadcast('cfpLoadingBar:completed');
+        _set(1);
+
+        // Attempt to aggregate any start/complete calls within 500ms:
+        completeTimeout = $timeout(function() {
+          $animate.leave(loadingBarContainer, function() {
+            status = 0;
+            started = false;
+          });
+          $animate.leave(spinner);
+        }, 500);
+      }
+
+      return {
+        start            : _start,
+        set              : _set,
+        status           : _status,
+        inc              : _inc,
+        complete         : _complete,
+        includeSpinner   : this.includeSpinner,
+        latencyThreshold : this.latencyThreshold,
+        parentSelector   : this.parentSelector,
+        startSize        : this.startSize
+      };
+
+
+    }];     //
+  });       // wtf javascript. srsly
+})();       //
+
+},{}],13:[function(require,module,exports){
+/*
+ AngularJS v1.2.17
+ (c) 2010-2014 Google, Inc. http://angularjs.org
+ License: MIT
+*/
+(function(u,f,P){'use strict';f.module("ngAnimate",["ng"]).factory("$$animateReflow",["$$rAF","$document",function(f,u){return function(e){return f(function(){e()})}}]).config(["$provide","$animateProvider",function(W,H){function e(f){for(var e=0;e<f.length;e++){var h=f[e];if(h.nodeType==aa)return h}}function C(h){return f.element(e(h))}var n=f.noop,h=f.forEach,Q=H.$$selectors,aa=1,k="$$ngAnimateState",K="ng-animate",g={running:!0};W.decorator("$animate",["$delegate","$injector","$sniffer","$rootElement",
+"$$asyncCallback","$rootScope","$document",function(y,u,$,L,F,I,P){function R(a){if(a){var b=[],c={};a=a.substr(1).split(".");($.transitions||$.animations)&&b.push(u.get(Q[""]));for(var d=0;d<a.length;d++){var f=a[d],e=Q[f];e&&!c[f]&&(b.push(u.get(e)),c[f]=!0)}return b}}function M(a,b,c){function d(a,b){var c=a[b],d=a["before"+b.charAt(0).toUpperCase()+b.substr(1)];if(c||d)return"leave"==b&&(d=c,c=null),t.push({event:b,fn:c}),l.push({event:b,fn:d}),!0}function e(b,d,f){var q=[];h(b,function(a){a.fn&&
+q.push(a)});var m=0;h(q,function(b,e){var h=function(){a:{if(d){(d[e]||n)();if(++m<q.length)break a;d=null}f()}};switch(b.event){case "setClass":d.push(b.fn(a,p,A,h));break;case "addClass":d.push(b.fn(a,p||c,h));break;case "removeClass":d.push(b.fn(a,A||c,h));break;default:d.push(b.fn(a,h))}});d&&0===d.length&&f()}var w=a[0];if(w){var k="setClass"==b,g=k||"addClass"==b||"removeClass"==b,p,A;f.isArray(c)&&(p=c[0],A=c[1],c=p+" "+A);var B=a.attr("class")+" "+c;if(T(B)){var r=n,v=[],l=[],x=n,m=[],t=[],
+B=(" "+B).replace(/\s+/g,".");h(R(B),function(a){!d(a,b)&&k&&(d(a,"addClass"),d(a,"removeClass"))});return{node:w,event:b,className:c,isClassBased:g,isSetClassOperation:k,before:function(a){r=a;e(l,v,function(){r=n;a()})},after:function(a){x=a;e(t,m,function(){x=n;a()})},cancel:function(){v&&(h(v,function(a){(a||n)(!0)}),r(!0));m&&(h(m,function(a){(a||n)(!0)}),x(!0))}}}}}function z(a,b,c,d,e,w,g){function n(d){var e="$animate:"+d;x&&(x[e]&&0<x[e].length)&&F(function(){c.triggerHandler(e,{event:a,
+className:b})})}function p(){n("before")}function A(){n("after")}function B(){n("close");g&&F(function(){g()})}function r(){r.hasBeenRun||(r.hasBeenRun=!0,w())}function v(){if(!v.hasBeenRun){v.hasBeenRun=!0;var d=c.data(k);d&&(l&&l.isClassBased?D(c,b):(F(function(){var d=c.data(k)||{};z==d.index&&D(c,b,a)}),c.data(k,d)));B()}}var l=M(c,a,b);if(l){b=l.className;var x=f.element._data(l.node),x=x&&x.events;d||(d=e?e.parent():c.parent());var m=c.data(k)||{};e=m.active||{};var t=m.totalActive||0,u=m.last;
+if(l.isClassBased&&(m.disabled||u&&!u.isClassBased)||N(c,d))r(),p(),A(),v();else{d=!1;if(0<t){m=[];if(l.isClassBased)"setClass"==u.event?(m.push(u),D(c,b)):e[b]&&(y=e[b],y.event==a?d=!0:(m.push(y),D(c,b)));else if("leave"==a&&e["ng-leave"])d=!0;else{for(var y in e)m.push(e[y]),D(c,y);e={};t=0}0<m.length&&h(m,function(a){a.cancel()})}!l.isClassBased||(l.isSetClassOperation||d)||(d="addClass"==a==c.hasClass(b));if(d)r(),p(),A(),B();else{if("leave"==a)c.one("$destroy",function(a){a=f.element(this);var b=
+a.data(k);b&&(b=b.active["ng-leave"])&&(b.cancel(),D(a,"ng-leave"))});c.addClass(K);var z=O++;t++;e[b]=l;c.data(k,{last:l,active:e,index:z,totalActive:t});p();l.before(function(d){var e=c.data(k);d=d||!e||!e.active[b]||l.isClassBased&&e.active[b].event!=a;r();!0===d?v():(A(),l.after(v))})}}}else r(),p(),A(),v()}function U(a){if(a=e(a))a=f.isFunction(a.getElementsByClassName)?a.getElementsByClassName(K):a.querySelectorAll("."+K),h(a,function(a){a=f.element(a);(a=a.data(k))&&a.active&&h(a.active,function(a){a.cancel()})})}
+function D(a,b){if(e(a)==e(L))g.disabled||(g.running=!1,g.structural=!1);else if(b){var c=a.data(k)||{},d=!0===b;!d&&(c.active&&c.active[b])&&(c.totalActive--,delete c.active[b]);if(d||!c.totalActive)a.removeClass(K),a.removeData(k)}}function N(a,b){if(g.disabled)return!0;if(e(a)==e(L))return g.disabled||g.running;do{if(0===b.length)break;var c=e(b)==e(L),d=c?g:b.data(k),d=d&&(!!d.disabled||d.running||0<d.totalActive);if(c||d)return d;if(c)break}while(b=b.parent());return!0}var O=0;L.data(k,g);I.$$postDigest(function(){I.$$postDigest(function(){g.running=
+!1})});var V=H.classNameFilter(),T=V?function(a){return V.test(a)}:function(){return!0};return{enter:function(a,b,c,d){a=f.element(a);b=b&&f.element(b);c=c&&f.element(c);this.enabled(!1,a);y.enter(a,b,c);I.$$postDigest(function(){a=C(a);z("enter","ng-enter",a,b,c,n,d)})},leave:function(a,b){a=f.element(a);U(a);this.enabled(!1,a);I.$$postDigest(function(){z("leave","ng-leave",C(a),null,null,function(){y.leave(a)},b)})},move:function(a,b,c,d){a=f.element(a);b=b&&f.element(b);c=c&&f.element(c);U(a);
+this.enabled(!1,a);y.move(a,b,c);I.$$postDigest(function(){a=C(a);z("move","ng-move",a,b,c,n,d)})},addClass:function(a,b,c){a=f.element(a);a=C(a);z("addClass",b,a,null,null,function(){y.addClass(a,b)},c)},removeClass:function(a,b,c){a=f.element(a);a=C(a);z("removeClass",b,a,null,null,function(){y.removeClass(a,b)},c)},setClass:function(a,b,c,d){a=f.element(a);a=C(a);z("setClass",[b,c],a,null,null,function(){y.setClass(a,b,c)},d)},enabled:function(a,b){switch(arguments.length){case 2:if(a)D(b);else{var c=
+b.data(k)||{};c.disabled=!0;b.data(k,c)}break;case 1:g.disabled=!a;break;default:a=!g.disabled}return!!a}}}]);H.register("",["$window","$sniffer","$timeout","$$animateReflow",function(k,g,C,L){function F(a,E){S&&S();X.push(E);S=L(function(){h(X,function(a){a()});X=[];S=null;q={}})}function I(a,E){var b=e(a);a=f.element(b);Y.push(a);b=Date.now()+E;b<=ea||(C.cancel(da),ea=b,da=C(function(){K(Y);Y=[]},E,!1))}function K(a){h(a,function(a){(a=a.data(m))&&(a.closeAnimationFn||n)()})}function R(a,E){var b=
+E?q[E]:null;if(!b){var c=0,d=0,e=0,f=0,m,Z,s,g;h(a,function(a){if(a.nodeType==aa){a=k.getComputedStyle(a)||{};s=a[J+B];c=Math.max(M(s),c);g=a[J+r];m=a[J+v];d=Math.max(M(m),d);Z=a[p+v];f=Math.max(M(Z),f);var b=M(a[p+B]);0<b&&(b*=parseInt(a[p+l],10)||1);e=Math.max(b,e)}});b={total:0,transitionPropertyStyle:g,transitionDurationStyle:s,transitionDelayStyle:m,transitionDelay:d,transitionDuration:c,animationDelayStyle:Z,animationDelay:f,animationDuration:e};E&&(q[E]=b)}return b}function M(a){var b=0;a=
+f.isString(a)?a.split(/\s*,\s*/):[];h(a,function(a){b=Math.max(parseFloat(a)||0,b)});return b}function z(a){var b=a.parent(),c=b.data(x);c||(b.data(x,++ca),c=ca);return c+"-"+e(a).getAttribute("class")}function U(a,b,c,d){var f=z(b),h=f+" "+c,k=q[h]?++q[h].total:0,g={};if(0<k){var l=c+"-stagger",g=f+" "+l;(f=!q[g])&&b.addClass(l);g=R(b,g);f&&b.removeClass(l)}d=d||function(a){return a()};b.addClass(c);var l=b.data(m)||{},s=d(function(){return R(b,h)});d=s.transitionDuration;f=s.animationDuration;if(0===
+d&&0===f)return b.removeClass(c),!1;b.data(m,{running:l.running||0,itemIndex:k,stagger:g,timings:s,closeAnimationFn:n});a=0<l.running||"setClass"==a;0<d&&D(b,c,a);0<f&&(0<g.animationDelay&&0===g.animationDuration)&&(e(b).style[p]="none 0s");return!0}function D(a,b,c){"ng-enter"!=b&&("ng-move"!=b&&"ng-leave"!=b)&&c?a.addClass(t):e(a).style[J+r]="none"}function N(a,b){var c=J+r,d=e(a);d.style[c]&&0<d.style[c].length&&(d.style[c]="");a.removeClass(t)}function O(a){var b=p;a=e(a);a.style[b]&&0<a.style[b].length&&
+(a.style[b]="")}function V(a,b,c,f){function g(a){b.off(z,l);b.removeClass(p);d(b,c);a=e(b);for(var fa in t)a.style.removeProperty(t[fa])}function l(a){a.stopPropagation();var b=a.originalEvent||a;a=b.$manualTimeStamp||b.timeStamp||Date.now();b=parseFloat(b.elapsedTime.toFixed(Q));Math.max(a-y,0)>=x&&b>=u&&f()}var k=e(b);a=b.data(m);if(-1!=k.getAttribute("class").indexOf(c)&&a){var p="";h(c.split(" "),function(a,b){p+=(0<b?" ":"")+a+"-active"});var n=a.stagger,s=a.timings,r=a.itemIndex,u=Math.max(s.transitionDuration,
+s.animationDuration),v=Math.max(s.transitionDelay,s.animationDelay),x=v*ba,y=Date.now(),z=A+" "+H,q="",t=[];if(0<s.transitionDuration){var B=s.transitionPropertyStyle;-1==B.indexOf("all")&&(q+=w+"transition-property: "+B+";",q+=w+"transition-duration: "+s.transitionDurationStyle+";",t.push(w+"transition-property"),t.push(w+"transition-duration"))}0<r&&(0<n.transitionDelay&&0===n.transitionDuration&&(q+=w+"transition-delay: "+T(s.transitionDelayStyle,n.transitionDelay,r)+"; ",t.push(w+"transition-delay")),
+0<n.animationDelay&&0===n.animationDuration&&(q+=w+"animation-delay: "+T(s.animationDelayStyle,n.animationDelay,r)+"; ",t.push(w+"animation-delay")));0<t.length&&(s=k.getAttribute("style")||"",k.setAttribute("style",s+"; "+q));b.on(z,l);b.addClass(p);a.closeAnimationFn=function(){g();f()};k=(r*(Math.max(n.animationDelay,n.transitionDelay)||0)+(v+u)*W)*ba;a.running++;I(b,k);return g}f()}function T(a,b,c){var d="";h(a.split(","),function(a,e){d+=(0<e?",":"")+(c*b+parseInt(a,10))+"s"});return d}function a(a,
+b,c,e){if(U(a,b,c,e))return function(a){a&&d(b,c)}}function b(a,b,c,e){if(b.data(m))return V(a,b,c,e);d(b,c);e()}function c(c,d,e,f){var g=a(c,d,e);if(g){var h=g;F(d,function(){N(d,e);O(d);h=b(c,d,e,f)});return function(a){(h||n)(a)}}f()}function d(a,b){a.removeClass(b);var c=a.data(m);c&&(c.running&&c.running--,c.running&&0!==c.running||a.removeData(m))}function G(a,b){var c="";a=f.isArray(a)?a:a.split(/\s+/);h(a,function(a,d){a&&0<a.length&&(c+=(0<d?" ":"")+a+b)});return c}var w="",J,H,p,A;u.ontransitionend===
+P&&u.onwebkittransitionend!==P?(w="-webkit-",J="WebkitTransition",H="webkitTransitionEnd transitionend"):(J="transition",H="transitionend");u.onanimationend===P&&u.onwebkitanimationend!==P?(w="-webkit-",p="WebkitAnimation",A="webkitAnimationEnd animationend"):(p="animation",A="animationend");var B="Duration",r="Property",v="Delay",l="IterationCount",x="$$ngAnimateKey",m="$$ngAnimateCSS3Data",t="ng-animate-block-transitions",Q=3,W=1.5,ba=1E3,q={},ca=0,X=[],S,da=null,ea=0,Y=[];return{enter:function(a,
+b){return c("enter",a,"ng-enter",b)},leave:function(a,b){return c("leave",a,"ng-leave",b)},move:function(a,b){return c("move",a,"ng-move",b)},beforeSetClass:function(b,c,d,e){var f=G(d,"-remove")+" "+G(c,"-add"),g=a("setClass",b,f,function(a){var e=b.attr("class");b.removeClass(d);b.addClass(c);a=a();b.attr("class",e);return a});if(g)return F(b,function(){N(b,f);O(b);e()}),g;e()},beforeAddClass:function(b,c,d){var e=a("addClass",b,G(c,"-add"),function(a){b.addClass(c);a=a();b.removeClass(c);return a});
+if(e)return F(b,function(){N(b,c);O(b);d()}),e;d()},setClass:function(a,c,d,e){d=G(d,"-remove");c=G(c,"-add");return b("setClass",a,d+" "+c,e)},addClass:function(a,c,d){return b("addClass",a,G(c,"-add"),d)},beforeRemoveClass:function(b,c,d){var e=a("removeClass",b,G(c,"-remove"),function(a){var d=b.attr("class");b.removeClass(c);a=a();b.attr("class",d);return a});if(e)return F(b,function(){N(b,c);O(b);d()}),e;d()},removeClass:function(a,c,d){return b("removeClass",a,G(c,"-remove"),d)}}}])}])})(window,
+window.angular);
+//# sourceMappingURL=angular-animate.min.js.map
+
+},{}],14:[function(require,module,exports){
 /**
 * @license AngularJS v1.2.15
 * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -1186,7 +1711,7 @@ module.exports = function(angular, undefined) {
 
 };
 
-},{}],10:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.10
@@ -4410,12 +4935,12 @@ angular.module('ui.router.compat')
   .provider('$route', $RouteProvider)
   .directive('ngView', $ViewDirective);
 })(window, window.angular);
-},{}],11:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 require('./lib/angular.min.js');
 
 module.exports = angular;
 
-},{"./lib/angular.min.js":12}],12:[function(require,module,exports){
+},{"./lib/angular.min.js":17}],17:[function(require,module,exports){
 /*
  AngularJS v1.2.16
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -4627,7 +5152,7 @@ function(a){var c={addOption:C,removeOption:C};return{restrict:"E",priority:100,
 terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular more than once."):((Ga=O.jQuery)?(y=Ga,D(Ga.fn,{scope:Ja.scope,isolateScope:Ja.isolateScope,controller:Ja.controller,injector:Ja.injector,inheritedData:Ja.inheritedData}),Ab("remove",!0,!0,!1),Ab("empty",!1,!1,!1),Ab("html",!1,!1,!0)):y=N,Ea.element=y,Zc(Ea),y(U).ready(function(){Wc(U,$b)}))})(window,document);!angular.$$csp()&&angular.element(document).find("head").prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}</style>');
 //# sourceMappingURL=angular.min.js.map
 
-},{}],13:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -5972,4 +6497,4 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
   }
 }).call(this);
 
-},{}]},{},[7])
+},{}]},{},[8])

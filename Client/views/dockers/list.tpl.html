@@ -1,67 +1,79 @@
  <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            DataTables Advanced Tables
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                    <thead>
-                                        <tr>
-                                            <th> # </th>
-                                            <th>name </th> 
-                                            <th> host </th>
-                                            <th>port  </th> 
-                                            <th> Images </th>
-                                            <th>containers </th> 
-                                            <th> Memory Limit </th>
-                                            <th>Health Status </th> 
-                                            <th>
-                                                 <a ui-sref = "dockers.new" class = "label label-primary" >
-                                                    <span class = "glyphicon glyphicon-plus" > </span>
-                                                 </a>
-                                            </th>
-                                        </tr> 
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="docker in dockers" >
-                                            <td> {{ $index + 1 }} </td>
-                                            <td> {{ docker.title  }} </td>
-                                            <td> {{ docker.host  }} </td>
-                                            <td> {{ docker.port  }} </td>
-                                            <td> {{docker.Images}} 
-                                            <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.Images) != 'undefined'" /> </td>
-                                           <td> {{docker.Containers}} 
-                                            <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.Containers) !== 'undefined'" /> </td>
-                                            <td> {{docker.MemoryLimit}} 
-                                            <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.MemoryLimit) !== 'undefined' " /> </td>
-                                            <td> {{docker.HealthStatus}} 
-                                            <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.HealthStatus) !== 'undefined'" /> </td>
-                                            <td>
-                                                <a href="#"   class="label label-primary action-refresh" docker-id="{{ docker.id }}" >
-                                                    <span class="glyphicon glyphicon-refresh"  data-toggle="tooltip" data-placement="bottom" title="Refresh"> </span>
-                                                </a> &nbsp;
-                                                <a href="#"  class="label label-success action-explore" docker-id="{{ docker.id }}" >
-                                                    <span class="glyphicon glyphicon-eye-open"> </span>
-                                                </a> &nbsp;
-                                                <a href="#" class="label label-danger action-delete" docker-id="{{ docker.id }}" ng-click="destroy(docker.id)" >
-                                                    <span class="glyphicon glyphicon-remove"> </span>
-                                                </a>
-                                            </td>
 
-                                        </tr>
-        
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- /.table-responsive -->
-                           
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-12 -->
+
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                DataTables Advanced Tables
             </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th> # </th>
+                                <th>name </th> 
+                                <th> host </th>
+                                <th>port  </th> 
+                                <th> Images </th>
+                                <th>containers </th> 
+                                <th> Memory Limit </th>
+                                <th>Health Status </th> 
+                                <th>
+                                     <a ui-sref = "dockers.new" class = "label label-primary" >
+                                        <span class = "glyphicon glyphicon-plus" > </span>
+                                     </a>
+                                </th>
+                            </tr> 
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="docker in dockers" >
+                                <td> {{ $index + 1 }} </td>
+                                <td> {{ docker.title  }} </td>
+                                <td> {{ docker.host  }} </td>
+                                <td> {{ docker.port  }} </td>
+                                <td> {{docker.Images}} 
+                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.Images) != 'undefined'" /> </td>
+                               <td> {{docker.Containers}} 
+                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.Containers) !== 'undefined'" /> </td>
+                                <td> {{docker.MemoryLimit}} 
+                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.MemoryLimit) !== 'undefined' " /> </td>
+                                <td> {{docker.HealthStatus}} 
+                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-show=" {{typeof(docker.HealthStatus) === 'undefined'}} " /> </td>
+                                <td>
+                                    <a href="#"   class="label label-primary action-refresh" ng-click="getInfo(docker)" >
+                                        <span class="glyphicon glyphicon-refresh"  data-toggle="tooltip" data-placement="bottom" title="Refresh"> </span>
+                                    </a> &nbsp;
+                                    <a   ui-sref="dockers.list.panel({id: docker.id })" class="label label-success action-explore" docker-id="{{ docker.id }}" >
+                                        <span class="glyphicon glyphicon-eye-open"> </span>
+                                    </a> &nbsp;
+                                    <a href="#" class="label label-danger action-delete" docker-id="{{ docker.id }}" ng-click="destroy(docker.id)" >
+                                        <span class="glyphicon glyphicon-remove"> </span>
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+               
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+   <div class="col-lg-12">
+        <div ui-view="images"></div>
+        <div ui-view="containers"></div>
+
+   </div>
+    <!-- /.col-lg-12 -->
+
+</div>

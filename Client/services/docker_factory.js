@@ -22,6 +22,22 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 
 	}
 
+	DockerFactory.find = function(id){
+		return $http
+				.get('/api/dockers/'+id)
+				.success( function(res){
+					if( res.errors )
+						return null;
+					else
+						return res.data
+				})
+				.error( function(err){
+				 	console.log("Error :", err);
+				})
+
+	}
+
+
 	DockerFactory.save = function( docker){
 		return $http
 			.post("/api/dockers", docker )
@@ -55,8 +71,13 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 				.error( function(err){
 				 	console.log("Error :", err);
 				})
+	}
 
-	}	
+	DockerFactory.getImages = function( id){
+			return $http
+					.get('/api/dockers/' + id + '/images')
+
+	}
 
 
 	

@@ -14,3 +14,11 @@
   background: rgb(245, 250, 245);
   text-shadow: 1px 1px 1px #ccc;
 }
+
+
+/* Restrict Table Height */
+
+#containerTableWrapper , #imageTableWrapper{
+	max-height: 800px;
+	overflow:auto;
+}

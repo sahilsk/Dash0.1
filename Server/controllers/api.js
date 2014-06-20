@@ -84,7 +84,7 @@ router.get("/dockers/:id/info", function(req, res){
 		res.send("Invalid request").end();
 	}
 
-	var resData = { error: null, data: null};
+	var resData = { errors: null, data: null};
 
 	Docklet.find(req.params.id, function( err, obj){
 		if( err){
@@ -98,58 +98,44 @@ router.get("/dockers/:id/info", function(req, res){
 			var docker = new require('dockerode')({host: "http://"+obj.host, port: obj.port});
 			var healthCheck = require("../lib/healthCheck");
 			
-			docker.info(function(err, info) {
-				if(err) {
-					console.log("error caught: " + err);
-					resData.errors = err;
-					res.send(resData).end();	
-				}else{
-					console.log("info: ", info);
-					resData.data = info;
-					healthCheck( "http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
-						resData.data.HealthStatus = isOK;
-						console.log( resData);
-						res.send(resData).end();			
-					} );					
-				}	
-
-			});		
+			try{
+				docker.info(function(err, info) {
+					if(err) {
+						console.log("error caught(/dockers/:id/info): " + err);
+						resData.errors = err;
+						res.send(resData).end();	
+						return;
+					}else{
+						console.log("info: ", info);
+						resData.data = info;
+						healthCheck( "http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
+							resData.data.HealthStatus = isOK;
+							console.log( resData);
+							res.send(resData).end();			
+						} );					
+					}
+				});
+			}catch( error){
+				resData.errors= error;
+				resData.data = null;
+				res.send(resData).end();
+			}
 
 		}
 	})
 });
 
 
-// router.get("/dockers/:id/images", function(req, res){
-
-// 	var resData = { errors: null, data:null};
-
-// 	try{
-// 		var docker = new require('dockerode')({host: "http://"+data.host, port: data.port});
-// 		docker.listImages(function(err, images) {
-// 			if(err) {
-// 				console.log("error caught: " + err);
-// 				resData.errors = err;
-// 				fn( resData );
-// 			}else{
-// 				console.log("images: ", images);
-// 				resData.data = images;
-// 				fn(resData);
-// 			}
-// 		});
-// 	} catch(error){
-// 		console.log("error caught: " + error);
-// 		resData.errors = error;
-// 		res.send( resData  ).end();;		
-// 	}
-// });
-
-
-
 router.get("/dockers/:id/images", function(req, res){
 
 	var id = req.params.id;
 	var resData = { error: null, data:null};
+	var listOpts = req.query;
+
+	if( typeof(listOpts.all) !== "undefined" )
+		listOpts.all = parseInt( listOpts.all);
+	if( listOpts.all === 0)
+		delete(listOpts.all);
 
 	Docklet.find(id, function( err, obj){
 		if( err){
@@ -172,7 +158,7 @@ router.get("/dockers/:id/images", function(req, res){
 			    	})
 				 },
 				 images: function(callback){
-				 	docker.listImages(function(err, images) {
+				 	docker.listImages(listOpts, function(err, images) {
 						callback(err, images);
 					});
 				 }
@@ -199,7 +185,23 @@ router.get("/dockers/:id/images", function(req, res){
 
 router.get("/dockers/:id/containers", function(req,res){
 	var resData = { errors: null, data:null};
-	var listOpts = {};
+
+	var listOpts = req.query;
+
+	if( typeof(listOpts.all) !== "undefined" )
+		listOpts.all = parseInt( listOpts.all);
+	if( listOpts.all === 0)
+		delete(listOpts.all);
+
+	if( typeof(listOpts.size) !== "undefined" )
+		listOpts.size = parseInt( listOpts.size);
+	if( listOpts.size === 0)
+		delete(listOpts.size);
+
+	if( typeof(listOpts.limit) !== "undefined" )
+		listOpts.limit = parseInt( listOpts.limit);
+	
+	console.log( listOpts);
 	Docklet.find(req.params.id, function( err, dockerHost){
 		if( err){
 			console.log("Error caught: " + error);
@@ -207,8 +209,9 @@ router.get("/dockers/:id/containers", function(req,res){
 			res.send( resData ).end();	
 
 		}else{
-			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
-			docker.listContainers(listOpts, function(err, containers) {
+			var docker = new require('dockerode')
+							({host: "http://"+dockerHost.host, port: dockerHost.port});
+			docker.listContainers( listOpts, function(err, containers) {
 				if(err) {
 					console.log("Failed to get container list: ", err);
 					resData.errors = err;

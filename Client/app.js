@@ -57,11 +57,11 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			views:{
 				'images': {
 					templateUrl: 'dockers/images.tpl.html',
-					controller: "DockerShowCtrl"
+					controller: "DockerImageCtrl"
 				},
 				'containers': {
 					templateUrl: 'dockers/containers.tpl.html',
-					controller: "DockerShowCtrl"				
+					controller: "DockerContainerCtrl"				
 				}
 			},
 			url: '/:id'

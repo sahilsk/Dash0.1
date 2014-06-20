@@ -1,5 +1,5 @@
 var app = require("../app");
-
+var _ = require("underscore");
 
 module.exports = app.factory("ImageFactory", ['$http', function($http){
 	var ImageFactory = {};
@@ -7,18 +7,19 @@ module.exports = app.factory("ImageFactory", ['$http', function($http){
 	ImageFactory.docker = null;
 	console.log()
 
-	ImageFactory.info = function(id){
-
-
+	ImageFactory.options = {
+		all: 0
 	}
 
-
-	ImageFactory.getImages = function(){
+	ImageFactory.getImages = function(opts){
 		if( !ImageFactory.docker){
 			return [];
 		}
-		return $http
-				.get("/api/dockers/"+ ImageFactory.docker.id + "/images")
+
+		opts = _.defaults(opts, ImageFactory.options);
+		return $http({	
+				method:"GET", url: "/api/dockers/"+ ImageFactory.docker.id + "/images", params: opts }
+				)
 				.success( function(res){
 					if( res.errors ){
 						console.log( "Error:" , res.errors);

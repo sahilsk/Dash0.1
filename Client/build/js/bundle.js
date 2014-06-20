@@ -1,4 +1,6 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"adpf6y":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"app":[function(require,module,exports){
+module.exports=require('adpf6y');
+},{}],"adpf6y":[function(require,module,exports){
 var angular = require('angular');
 var uiRouter = require('angular-ui-router');
 var angular_animate = require('angular-module-animate');
@@ -58,11 +60,11 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			views:{
 				'images': {
 					templateUrl: 'dockers/images.tpl.html',
-					controller: "DockerShowCtrl"
+					controller: "DockerImageCtrl"
 				},
 				'containers': {
 					templateUrl: 'dockers/containers.tpl.html',
-					controller: "DockerShowCtrl"				
+					controller: "DockerContainerCtrl"				
 				}
 			},
 			url: '/:id'
@@ -88,21 +90,84 @@ app.run(['$rootScope', '$location', function($rootScope, $location) {
 
 
 module.exports = app;
-},{"./build/view/templates.js":3,"angular":16,"angular-loading-bar":12,"angular-module-animate":13,"angular-router-browserify":14,"angular-ui-router":15}],"app":[function(require,module,exports){
-module.exports=require('adpf6y');
-},{}],3:[function(require,module,exports){
+},{"./build/view/templates.js":3,"angular":18,"angular-loading-bar":14,"angular-module-animate":15,"angular-router-browserify":16,"angular-ui-router":17}],3:[function(require,module,exports){
 module.exports = angular.module('templates-main', []).run(['$templateCache', function($templateCache) {
   $templateCache.put("dockers/containers.tpl.html",
-    "<div class=\"panel panel-default\"><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Containers List</div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-borderedf imageTable\"><thead><tr><th>#</th><th>ID</th><th>Image</th><th>Command</th><th>Created</th><th>Status</th><th>Ports</th><th>SizeRw</th><th>SizeRootFs</th><th>Names</th></tr></thead><tbody><tr ng-repeat=\"container in containers\"><td>{{ $index + 1 }}</td><td><a container-id=\"{{ container.Id }}\"><span class=\"label label-info\" title=\"{{ container.Id }}\">{{ container.Id}}</span></a></td><td>{{ container.Image }}</td><td>{{ container.Command }}</td><td>{{ container.Created }}</td><td>{{ container.Status }}</td><td>{{ container.Ports }}</td><td>{{ container.SizeRw }}</td><td>{{ container.SizeRootFs }}</td><td>{{ container.Names }}</td><td><a href=# class=\"label label-warning action-refresh\" container-id=\"{{ container.Id }}\"><span class=\"glyphicon glyphicon-search\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp;</td></tr></tbody></table></div></div>");
+    "<div class=\"panel panel-default\" id=containerTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Containers List<div class=filters style=\"float: right\"><label>Include Size?</label>&nbsp; <input type=checkbox ng-change=getContainers() ng-model=opts.size ng-true-value=1 ng-false-value=0> | &nbsp;<label>Fetch All?</label>&nbsp; <input type=checkbox ng-change=getContainers() ng-model=opts.all ng-true-value=1 ng-false-value=0> | &nbsp;<label>Limit to:</label>&nbsp; <input type=number ng-change=getContainers() ng-model=opts.limit size=3 placeholder=100 style=width:50px> | &nbsp;<label>Search</label><input ng-model=filterContainer></div></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th>#</th><th>ID</th><th>Image</th><th>Command</th><th>Created</th><th>Status</th><th>Ports</th><th>SizeRw</th><th>SizeRootFs</th><th>Names</th></tr></thead><tbody><tr ng-repeat=\"container in containers | filter:filterContainer | orderBy: container.Created\"><td>{{ $index + 1 }}</td><td><a container-id=\"{{ container.Id }}\"><span class=\"label label-info\" title=\"{{ container.Id }}\">{{ container.Id}}</span></a></td><td>{{ container.Image }}</td><td>{{ container.Command }}</td><td>{{ container.Created }}</td><td>{{ container.Status }}</td><td>{{ container.Ports }}</td><td>{{ container.SizeRw }}</td><td>{{ container.SizeRootFs }}</td><td>{{ container.Names }}</td><td><a href=# class=\"label label-warning action-refresh\" container-id=\"{{ container.Id }}\"><span class=\"glyphicon glyphicon-search\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp;</td></tr></tbody></table></div></div>");
   $templateCache.put("dockers/images.tpl.html",
-    "<div class=\"panel panel-default\" id=imagesTable><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Images List : {{docker.id}} <input ng-model=filterImage style=\"float: right\"></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th>#</th><th>ID</th><th>RepoTags</th><th>Created</th><th>Size</th><th>Virtual Size</th></tr></thead><tbody><tr ng-repeat=\"image in images | orderBy: image.Created | filter:filterImage\"><td>{{ $index + 1 }}</td><td><a image-id=\"{{ image.Id }}\" title=\"{{ image.Id }}\"><span class=\"label label-primary\">{{ image.Id.substring(0, 14) }}</span></a></td><td>{{ image.RepoTags }}</td><td>{{ image.Created }}</td><td>{{ image.Size }}</td><td>{{ image.VirtualSize }}</td></tr></tbody></table></div></div>");
+    "<div class=\"panel panel-default\" id=imageTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Images List : {{docker.id}}<div class=filters style=\"float: right\"><label>Fetch All?</label>&nbsp; <input type=checkbox ng-change=getImages() ng-model=opts.all ng-true-value=1 ng-false-value=0> | &nbsp;<label>Search</label><input ng-model=filterImage></div></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th>#</th><th>ID</th><th>RepoTags</th><th>Created</th><th>Size</th><th>Virtual Size</th></tr></thead><tbody><tr ng-repeat=\"image in images | orderBy: image.Created | filter:filterImage\"><td>{{ $index + 1 }}</td><td><a image-id=\"{{ image.Id }}\" title=\"{{ image.Id }}\"><span class=\"label label-primary\">{{ image.Id.substring(0, 14) }}</span></a></td><td>{{ image.RepoTags }}</td><td>{{ image.Created }}</td><td>{{ image.Size }}</td><td>{{ image.VirtualSize }}</td></tr></tbody></table></div></div>");
   $templateCache.put("dockers/list.tpl.html",
-    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\"><div class=panel-heading>DataTables Advanced Tables</div><div class=panel-body><div class=table-responsive><table class=\"table table-striped table-bordered table-hover\" id=dataTables-example><thead><tr><th>#</th><th>name</th><th>host</th><th>port</th><th>Images</th><th>containers</th><th>Memory Limit</th><th>Health Status</th><th><a ui-sref=dockers.new class=\"label label-primary\"><span class=\"glyphicon glyphicon-plus\"></span></a></th></tr></thead><tbody><tr ng-repeat=\"docker in dockers\"><td>{{ $index + 1 }}</td><td>{{ docker.title }}</td><td>{{ docker.host }}</td><td>{{ docker.port }}</td><td>{{docker.Images}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof(docker.Images) != 'undefined'\"></td><td>{{docker.Containers}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof(docker.Containers) !== 'undefined'\"></td><td>{{docker.MemoryLimit}} <img src=/images/refreshing_x24.gif alt=loading... ng-hide=\"typeof(docker.MemoryLimit) !== 'undefined' \"></td><td>{{docker.HealthStatus}} <img src=/images/refreshing_x24.gif alt=loading... ng-show=\" {{typeof(docker.HealthStatus) === 'undefined'}} \"></td><td><a href=# class=\"label label-primary action-refresh\" ng-click=getInfo(docker)><span class=\"glyphicon glyphicon-refresh\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp; <a ui-sref=\"dockers.list.panel({id: docker.id })\" class=\"label label-success action-explore\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> &nbsp; <a href=# class=\"label label-danger action-delete\" docker-id=\"{{ docker.id }}\" ng-click=destroy(docker.id)><span class=\"glyphicon glyphicon-remove\"></span></a></td></tr></tbody></table></div></div></div></div></div><div class=row><div class=col-lg-12><div ui-view=images></div><div ui-view=containers></div></div></div>");
+    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\"><div class=panel-heading>DataTables Advanced Tables</div><div class=panel-body><div class=table-responsive><table class=\"table table-striped table-bordered table-hover\" id=dataTables-example><thead><tr><th>#</th><th>name</th><th>host</th><th>port</th><th>Images</th><th>containers</th><th>Memory Limit</th><th>Health Status</th><th><a ui-sref=dockers.new class=\"label label-primary\"><span class=\"glyphicon glyphicon-plus\"></span></a></th></tr></thead><tbody><tr ng-repeat=\"docker in dockers\"><td>{{ $index + 1 }}</td><td>{{ docker.title }}</td><td>{{ docker.host }}</td><td>{{ docker.port }}</td><td>{{docker.Images}} <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.Images==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.Images==-1\">FAIL</span></td><td>{{docker.Containers}} <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.Containers==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.Containers==-1\">FAIL</span></td><td>{{docker.MemoryLimit}} <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.MemoryLimit==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.MemoryLimit==-1\">FAIL</span></td><td><img src=/images/refreshing_x24.gif alt=loading... ng-show=\"{{ docker.HealthStatus }} \"> <span class=\"label label-success glyphicon glyphicon-ok text-center\" ng-show=docker.HealthStatus>OK</span> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-hide=docker.HealthStatus>FAIL</span></td><td><a href=# class=\"label label-primary action-refresh\" ng-click=getInfo(docker)><span class=\"glyphicon glyphicon-refresh\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp; <a ui-sref=\"dockers.list.panel({id: docker.id })\" class=\"label label-success action-explore\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> &nbsp; <a href=# class=\"label label-danger action-delete\" docker-id=\"{{ docker.id }}\" ng-click=destroy(docker.id)><span class=\"glyphicon glyphicon-remove\"></span></a></td></tr></tbody></table></div></div></div></div></div><div class=row><div class=col-lg-12><div ui-view=images></div><div ui-view=containers></div></div></div>");
   $templateCache.put("dockers/new.tpl.html",
     "<h1>New Docker</h1><div ng-controller=DockerNewCtrl><div class=\"alert alert-dismissable alert-{{$root.notification.type}}\" ng-hide=\"$root.notification === 'undefined' || $root.notification.type === null\"><button type=button class=close data-dismiss=alert aria-hidden=true>×</button> {{ $root.notification.message }}</div><form name=newDockerForm class=cssForm role=form ng-submit=\"newDockerForm.$valid &&  submit()\" novalidate><div class=form-group><label class=control-label for=hostname>Nick</label><input name=title class=form-control ng-model=docker.title placeholder=\"eg. Mickie\" required></div><div class=form-group><label class=control-label for=hostname>Hostname</label><input name=hostname class=form-control ng-model=docker.hostname placeholder=\"eg. 10.2.1.1\" required></div><div class=form-group><label class=control-label for=port>Port</label><input name=port type=number class=form-control ng-model=docker.port placeholder=\"eg. 4273\" pattern=[0-9]*[0-9]+></div><div class=form-group><label class=control-label for=healthCheckPath>Health check path</label><input name=healthCheckPath class=form-control ng-model=docker.healthCheckPath placeholder=\"eg. /ping\"></div><button type=button class=\"btn btn-outline btn-primary\" ng-click=\"newDockerForm.$valid &&  submit()\">Submit</button></form></div>");
 }]);
 
 },{}],4:[function(require,module,exports){
+
+var _ = require("underscore");
+var app = require("../app");
+
+
+module.exports  = app.controller('DockerContainerCtrl', 
+		[ '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory', 'currentDocker',
+		 function(  $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
+		 	$scope.containers = [];
+		 	$scope.opts = ContainerFactory.options;
+			$scope.docker = currentDocker.data.data;
+			ImageFactory.docker = $scope.docker;
+	 		ContainerFactory.docker = $scope.docker;
+
+			console.log( $scope.docker );
+
+			$scope.getContainers = function(){	
+				ContainerFactory.getContainers( $scope.opts ).then( function(res){
+					//console.log( res);
+					ContainerFactory.containers = res.data.data;
+					$scope.containers = ContainerFactory.containers ;
+					console.log( "Containers: ",$scope.containers);
+				})
+
+			}
+
+			$scope.getContainers();
+		
+}
+]);
+
+},{"../app":"adpf6y","underscore":20}],5:[function(require,module,exports){
+
+var _ = require("underscore");
+var app = require("../app");
+
+
+module.exports  = app.controller('DockerImageCtrl', 
+		[ '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory', 'currentDocker',
+		 function(  $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
+			$scope.images = [];
+			$scope.opts = ContainerFactory.options;
+			$scope.docker = currentDocker.data.data;
+
+			ImageFactory.docker = $scope.docker;
+	 		ContainerFactory.docker = $scope.docker;
+
+			console.log( $scope.docker );
+
+			$scope.getImages = function(){
+				ImageFactory.getImages($scope.opts).then( function(res){
+					$scope.images = res.data.data.images;
+					$scope.info = res.data.data.info;
+					$scope.version = res.data.data.version;
+				 	console.log("Images: ", res.data.data);
+
+				});				
+			}
+
+			$scope.getImages();
+		
+}
+]);
+
+},{"../app":"adpf6y","underscore":20}],6:[function(require,module,exports){
 var app = require("../app");
 var _ = require("underscore");
 
@@ -143,18 +208,36 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 		}
 
 		$scope.getDockerStatus = function(){
-
 			_.each($scope.dockers, function(docker){
+					delete( docker.Images );
+					delete( docker.Containers);
+					delete( docker.MemoryLimit);
+					delete( docker.HealthStatus);
+					
 					DockerFactory
 						.info(docker.id)
 						.then( function(res){
-							if( res.data.data != null){
-						 		docker.Images = res.data.data.Images;			 		
-						 		docker.Containers = res.data.data.Containers;
-						 		docker.MemoryLimit = res.data.data.MemoryLimit;
-						 		docker.HealthStatus = res.data.data.HealthStatus;
-						 		console.log(res);
+					 		console.log(res);
+							if( res && typeof(res.data.errors) !== 'undefined' ){
+								if( res.data.data != null){
+							 		docker.Images = res.data.data.Images;			 		
+							 		docker.Containers = res.data.data.Containers;
+							 		docker.MemoryLimit = res.data.data.MemoryLimit;
+							 		docker.HealthStatus = res.data.data.HealthStatus;
+								}					
+						 	}else{
+						 		docker.Images = -1;
+						 		docker.Containers= -1;
+						 		docker.MemoryLimit = -1;
+						 		docker.HealthStatus = -1;
 						 	}
+				 		}, function( res){
+				 			console.log("something went wrong");
+					 		docker.Images = -1;
+					 		docker.Containers= -1;
+					 		docker.MemoryLimit = -1;
+					 		docker.HealthStatus = -1;
+
 				 		});
 
 			});
@@ -163,7 +246,6 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 		}
 
 		$scope.getInfo = function( docker){
-			console.log("getInfo : ", docker);
 				DockerFactory
 						.info(docker.id)
 						.then( function(res){
@@ -175,7 +257,10 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 						 		console.log(res);
 						 	}
 				 
-				});
+						}, function(res){
+							console.log("something went wrong: ", res);
+
+						});
 		}
 
 		$scope.explore = function( docker){
@@ -187,7 +272,7 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 }]);
 
 
-},{"../app":"adpf6y","../services/docker_factory.js":10,"underscore":18}],5:[function(require,module,exports){
+},{"../app":"adpf6y","../services/docker_factory.js":12,"underscore":20}],7:[function(require,module,exports){
 
 var _ = require("underscore");
 var app = require("../app");
@@ -222,7 +307,7 @@ module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', '$location
 		}
 }]);
 
-},{"../app":"adpf6y","underscore":18}],6:[function(require,module,exports){
+},{"../app":"adpf6y","underscore":20}],8:[function(require,module,exports){
 
 var _ = require("underscore");
 var app = require("../app");
@@ -231,33 +316,17 @@ var app = require("../app");
 module.exports  = app.controller('DockerShowCtrl', 
 		[ '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory', 'currentDocker',
 		 function(  $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
-			$scope.images = [];
 
 			$scope.docker = currentDocker.data.data;
 			ImageFactory.docker = $scope.docker;
 	 		ContainerFactory.docker = $scope.docker;
 
 			console.log( $scope.docker );
-
-			ImageFactory.getImages().then( function(res){
-				$scope.images = res.data.data.images;
-				$scope.info = res.data.data.info;
-				$scope.version = res.data.data.version;
-			 	console.log("Images: ", res.data.data);
-
-			});
-
-			ContainerFactory.getContainers().then( function(res){
-				$scope.containers = res.data.data.containers
-				console.log( "Containers: ", res.data);
-
-			})
-
 		
 }
 ]);
 
-},{"../app":"adpf6y","underscore":18}],7:[function(require,module,exports){
+},{"../app":"adpf6y","underscore":20}],9:[function(require,module,exports){
 var app = require("../app");
 var templates = require("../build/view/templates");
 
@@ -270,7 +339,7 @@ module.exports = app.directive('dockerList',  function(){
 	} 
 	 
 });
-},{"../app":"adpf6y","../build/view/templates":3}],8:[function(require,module,exports){
+},{"../app":"adpf6y","../build/view/templates":3}],10:[function(require,module,exports){
 
 var angular = require("angular");
 var app = require("./app");
@@ -278,6 +347,10 @@ var app = require("./app");
 require("./controllers/docker_list_ctrl");
 require("./controllers/docker_new_ctrl");
 require("./controllers/docker_show_ctrl");
+require("./controllers/docker_image_ctrl");
+require("./controllers/docker_container_ctrl");
+
+
 
 require("./directives/docker_list");
 
@@ -295,33 +368,43 @@ window.onload = function () {
 };
 
 */
-},{"./app":"adpf6y","./controllers/docker_list_ctrl":4,"./controllers/docker_new_ctrl":5,"./controllers/docker_show_ctrl":6,"./directives/docker_list":7,"./services/container_factory":9,"./services/docker_factory":10,"./services/image_factory":11,"angular":16}],9:[function(require,module,exports){
+},{"./app":"adpf6y","./controllers/docker_container_ctrl":4,"./controllers/docker_image_ctrl":5,"./controllers/docker_list_ctrl":6,"./controllers/docker_new_ctrl":7,"./controllers/docker_show_ctrl":8,"./directives/docker_list":9,"./services/container_factory":11,"./services/docker_factory":12,"./services/image_factory":13,"angular":18}],11:[function(require,module,exports){
 var app = require("../app");
+var _ = require("underscore");
 
 
 module.exports = app.factory("ContainerFactory", ['$http', function($http){
 	var ContainerFactory = {};
+	ContainerFactory.containers = [];
+
+	ContainerFactory.options = {
+		all: 0,
+		size:0,
+		limit: 100
+	}
 
 	ContainerFactory.docker = null;
 	console.log()
 
 	ContainerFactory.info = function(id){
-
-
 	}
 
-	ContainerFactory.getContainers = function(){
+	ContainerFactory.getContainers = function(opts){
 		if( !ContainerFactory.docker){
 			return [];
 		}
-		return $http
-				.get("/api/dockers/"+ ContainerFactory.docker.id + "/containers")
+
+		opts = _.defaults(opts, ContainerFactory.options);
+
+		return $http({	
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers", params: opts }
+				)
 				.success( function(res){
 					if( res.errors ){
 						console.log( "Error:" , res.errors);
 						return res;
 					}else{
-						console.log("Images: ", res.data);
+						//console.log("Containers: ", res.data);
 						return res.data;
 					}
 				});
@@ -332,7 +415,7 @@ module.exports = app.factory("ContainerFactory", ['$http', function($http){
 	return ContainerFactory;
 
 }] );
-},{"../app":"adpf6y"}],10:[function(require,module,exports){
+},{"../app":"adpf6y","underscore":20}],12:[function(require,module,exports){
 var app = require("../app");
 
 
@@ -341,8 +424,11 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	DockerFactory.dockers = [];
 
 	DockerFactory.getDockers = function(){
-		return $http
-			.get("/api/dockers/list" )
+		return $http({
+				method:'GET',
+				url: "/api/dockers/list",
+				timeout: 5000
+			})
 			.success( function(data){
 					if(data.status != 200 ){
 						console.log( data.errors);
@@ -396,15 +482,19 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 
 	}
 
-
 	DockerFactory.info = function( id){
-		return $http
-				.get('/api/dockers/'+id+"/info")
+		return $http({
+				method:'GET',
+				url: '/api/dockers/'+id+'/info',
+				timeout: 3000
+				})
 				.success( function(res){
+					console.log(res);
 					return res;
 				})
 				.error( function(err){
 				 	console.log("Error :", err);
+				 	return {};
 				})
 	}
 
@@ -419,9 +509,9 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	return DockerFactory;
 
 }] );
-},{"../app":"adpf6y"}],11:[function(require,module,exports){
+},{"../app":"adpf6y"}],13:[function(require,module,exports){
 var app = require("../app");
-
+var _ = require("underscore");
 
 module.exports = app.factory("ImageFactory", ['$http', function($http){
 	var ImageFactory = {};
@@ -429,18 +519,19 @@ module.exports = app.factory("ImageFactory", ['$http', function($http){
 	ImageFactory.docker = null;
 	console.log()
 
-	ImageFactory.info = function(id){
-
-
+	ImageFactory.options = {
+		all: 0
 	}
 
-
-	ImageFactory.getImages = function(){
+	ImageFactory.getImages = function(opts){
 		if( !ImageFactory.docker){
 			return [];
 		}
-		return $http
-				.get("/api/dockers/"+ ImageFactory.docker.id + "/images")
+
+		opts = _.defaults(opts, ImageFactory.options);
+		return $http({	
+				method:"GET", url: "/api/dockers/"+ ImageFactory.docker.id + "/images", params: opts }
+				)
 				.success( function(res){
 					if( res.errors ){
 						console.log( "Error:" , res.errors);
@@ -457,7 +548,7 @@ module.exports = app.factory("ImageFactory", ['$http', function($http){
 	return ImageFactory;
 
 }] );
-},{"../app":"adpf6y"}],12:[function(require,module,exports){
+},{"../app":"adpf6y","underscore":20}],14:[function(require,module,exports){
 /*
  * angular-loading-bar
  *
@@ -754,7 +845,7 @@ angular.module('cfp.loadingBar', [])
   });       // wtf javascript. srsly
 })();       //
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*
  AngularJS v1.2.17
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -784,7 +875,7 @@ if(e)return F(b,function(){N(b,c);O(b);d()}),e;d()},setClass:function(a,c,d,e){d
 window.angular);
 //# sourceMappingURL=angular-animate.min.js.map
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
 * @license AngularJS v1.2.15
 * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -1711,7 +1802,7 @@ module.exports = function(angular, undefined) {
 
 };
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.10
@@ -4935,12 +5026,12 @@ angular.module('ui.router.compat')
   .provider('$route', $RouteProvider)
   .directive('ngView', $ViewDirective);
 })(window, window.angular);
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 require('./lib/angular.min.js');
 
 module.exports = angular;
 
-},{"./lib/angular.min.js":17}],17:[function(require,module,exports){
+},{"./lib/angular.min.js":19}],19:[function(require,module,exports){
 /*
  AngularJS v1.2.16
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -5152,7 +5243,7 @@ function(a){var c={addOption:C,removeOption:C};return{restrict:"E",priority:100,
 terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular more than once."):((Ga=O.jQuery)?(y=Ga,D(Ga.fn,{scope:Ja.scope,isolateScope:Ja.isolateScope,controller:Ja.controller,injector:Ja.injector,inheritedData:Ja.inheritedData}),Ab("remove",!0,!0,!1),Ab("empty",!1,!1,!1),Ab("html",!1,!1,!0)):y=N,Ea.element=y,Zc(Ea),y(U).ready(function(){Wc(U,$b)}))})(window,document);!angular.$$csp()&&angular.element(document).find("head").prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}</style>');
 //# sourceMappingURL=angular.min.js.map
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -6497,4 +6588,4 @@ terminal:!0});O.angular.bootstrap?console.log("WARNING: Tried to load angular mo
   }
 }).call(this);
 
-},{}]},{},[8])
+},{}]},{},[10])

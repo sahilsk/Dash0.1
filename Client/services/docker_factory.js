@@ -6,8 +6,11 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	DockerFactory.dockers = [];
 
 	DockerFactory.getDockers = function(){
-		return $http
-			.get("/api/dockers/list" )
+		return $http({
+				method:'GET',
+				url: "/api/dockers/list",
+				timeout: 5000
+			})
 			.success( function(data){
 					if(data.status != 200 ){
 						console.log( data.errors);
@@ -61,15 +64,19 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 
 	}
 
-
 	DockerFactory.info = function( id){
-		return $http
-				.get('/api/dockers/'+id+"/info")
+		return $http({
+				method:'GET',
+				url: '/api/dockers/'+id+'/info',
+				timeout: 3000
+				})
 				.success( function(res){
+					console.log(res);
 					return res;
 				})
 				.error( function(err){
 				 	console.log("Error :", err);
+				 	return {};
 				})
 	}
 

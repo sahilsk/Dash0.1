@@ -34,13 +34,22 @@
                                 <td> {{ docker.host  }} </td>
                                 <td> {{ docker.port  }} </td>
                                 <td> {{docker.Images}} 
-                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.Images) != 'undefined'" /> </td>
-                               <td> {{docker.Containers}} 
-                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.Containers) !== 'undefined'" /> </td>
+                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.Images==undefined" />
+                                     <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.Images==-1"> FAIL </span>
+                                </td>
+                                <td> {{docker.Containers}} 
+                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.Containers==undefined" /> 
+                                    <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.Containers==-1"> FAIL </span>
+                                </td>
                                 <td> {{docker.MemoryLimit}} 
-                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-hide="typeof(docker.MemoryLimit) !== 'undefined' " /> </td>
-                                <td> {{docker.HealthStatus}} 
-                                <img src="/images/refreshing_x24.gif", alt="loading..." ng-show=" {{typeof(docker.HealthStatus) === 'undefined'}} " /> </td>
+                                   <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.MemoryLimit==undefined" />
+                                   <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.MemoryLimit==-1"> FAIL </span>
+                                </td>
+                                <td> 
+                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="{{ docker.HealthStatus }} " />
+                                    <span class='label label-success glyphicon glyphicon-ok text-center' ng-show="docker.HealthStatus"> OK </span>
+                                    <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-hide="docker.HealthStatus && docker.HealthStatus == -1"> FAIL </span>
+                                </td>
                                 <td>
                                     <a href="#"   class="label label-primary action-refresh" ng-click="getInfo(docker)" >
                                         <span class="glyphicon glyphicon-refresh"  data-toggle="tooltip" data-placement="bottom" title="Refresh"> </span>

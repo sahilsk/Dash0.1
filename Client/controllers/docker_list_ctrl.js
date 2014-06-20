@@ -38,18 +38,36 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 		}
 
 		$scope.getDockerStatus = function(){
-
 			_.each($scope.dockers, function(docker){
+					delete( docker.Images );
+					delete( docker.Containers);
+					delete( docker.MemoryLimit);
+					delete( docker.HealthStatus);
+					
 					DockerFactory
 						.info(docker.id)
 						.then( function(res){
-							if( res.data.data != null){
-						 		docker.Images = res.data.data.Images;			 		
-						 		docker.Containers = res.data.data.Containers;
-						 		docker.MemoryLimit = res.data.data.MemoryLimit;
-						 		docker.HealthStatus = res.data.data.HealthStatus;
-						 		console.log(res);
+					 		console.log(res);
+							if( res && typeof(res.data.errors) !== 'undefined' ){
+								if( res.data.data != null){
+							 		docker.Images = res.data.data.Images;			 		
+							 		docker.Containers = res.data.data.Containers;
+							 		docker.MemoryLimit = res.data.data.MemoryLimit;
+							 		docker.HealthStatus = res.data.data.HealthStatus;
+								}					
+						 	}else{
+						 		docker.Images = -1;
+						 		docker.Containers= -1;
+						 		docker.MemoryLimit = -1;
+						 		docker.HealthStatus = -1;
 						 	}
+				 		}, function( res){
+				 			console.log("something went wrong");
+					 		docker.Images = -1;
+					 		docker.Containers= -1;
+					 		docker.MemoryLimit = -1;
+					 		docker.HealthStatus = -1;
+
 				 		});
 
 			});
@@ -58,7 +76,6 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 		}
 
 		$scope.getInfo = function( docker){
-			console.log("getInfo : ", docker);
 				DockerFactory
 						.info(docker.id)
 						.then( function(res){
@@ -70,7 +87,10 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 						 		console.log(res);
 						 	}
 				 
-				});
+						}, function(res){
+							console.log("something went wrong: ", res);
+
+						});
 		}
 
 		$scope.explore = function( docker){

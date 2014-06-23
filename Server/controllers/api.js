@@ -183,6 +183,40 @@ router.get("/dockers/:id/images", function(req, res){
 
 });
 
+router.get("/dockers/:id/images/:imageId", function(req, res){
+
+	var id = req.params.id;
+	var imageId = req.params.imageId;
+	var resData = { errors: null, data:null};
+
+	Docklet.find(id, function( err, dockerHost){
+		if( err){
+			console.log("Error caught: " + error);
+			resData.errors = error;
+			res.send( resData ).end();	
+
+		}else{
+
+			var resData = { error: null, data:null};
+			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
+
+			var image = docker.getImage( imageId);
+			image.inspect( function(err, data ){
+				if(err){
+					resData.errors = err;
+					res.send( resData ).end();	
+				}{
+					resData.data = data;
+					console.log( resData);
+					res.send( resData ).end();	
+				}
+			});
+
+		}
+	});
+
+});
+
 router.get("/dockers/:id/containers", function(req,res){
 	var resData = { errors: null, data:null};
 
@@ -227,6 +261,60 @@ router.get("/dockers/:id/containers", function(req,res){
 	})
 });
 
+
+
+router.get("/dockers/:id/containers/:containerId", function(req, res){
+
+	var id = req.params.id;
+	var containerId = req.params.containerId;
+	var resData = { errors: null, data:null};
+
+	Docklet.find(id, function( err, dockerHost){
+		if( err){
+			console.log("Error caught: " + error);
+			resData.errors = error;
+			res.send( resData ).end();	
+
+		}else{
+
+			var resData = { error: null, data:null};
+			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
+
+			var container = docker.getContainer( containerId);
+			container.inspect( function(err, data ){
+				if(err){
+					resData.errors = err;
+					res.send( resData ).end();	
+				}{
+					resData.data = data;
+					console.log( resData);
+					res.send( resData ).end();	
+				}
+			});
+
+		}
+	});
+
+});
+
+router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
+	var containerId = req.params.containerId;
+	var resData = { errors: null, data:null};
+
+	var container = docker.getContainer( containerId);
+		container.top( function(err,processes){
+		if(err) {
+			console.log("Error caught: " + err);
+			resData.errors = err;
+			res.send( resData ).end();	
+		}else{
+			console.log("processes: ", processes);
+			resData.data = processes;
+			res.send( resData ).end();	
+		}
+	});
+
+})
 
 
 module.exports = router;

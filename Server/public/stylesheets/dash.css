@@ -18,7 +18,7 @@
 
 /* Restrict Table Height */
 
-#containerTableWrapper , #imageTableWrapper{
+/*#containerTableWrapper , #imageTableWrapper{
 	max-height: 800px;
 	overflow:auto;
-}
+}*/

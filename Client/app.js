@@ -1,8 +1,8 @@
 var angular = require('angular');
 var uiRouter = require('angular-ui-router');
 var angular_animate = require('angular-module-animate');
+var ngPrettyJson = require("./lib/ng-prettyjson.min");
 
-require('angular-loading-bar');
 
 
 //var toaster = require("./lib/toaster");
@@ -11,7 +11,7 @@ require('angular-router-browserify')(angular);
 require("./build/view/templates.js");
 
 
-var app = angular.module('DashApp', [uiRouter, 'templates-main']);
+var app = angular.module('DashApp', [uiRouter, 'templates-main', 'ngPrettyJson' ]);
 
 app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', function( $stateProvider, $urlRouterProvider, $locationProvider){
 
@@ -24,17 +24,16 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			template:"<div ui-view> </div>"
 
 		})		
-		.state('dockers.list', {
-			url:'/list',
-			controller: "DockerListCtrl",
-			templateUrl: "dockers/list.tpl.html"
-		})
 		.state('dockers.new', {
 			url:'/new',
 			controller: "DockerNewCtrl",
 			templateUrl: "dockers/new.tpl.html"
 		})
-
+		.state('dockers.list', {
+			url:'/list',
+			controller: "DockerListCtrl",
+			templateUrl: "dockers/list.tpl.html"
+		})		
 		.state('dockers.list.panel', {
 			resolve:{
 				currentDocker: function($http, $stateParams) {
@@ -66,6 +65,10 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			},
 			url: '/:id'
 			
+		})
+		.state('docker.list.panel', {
+
+
 		});
 	
 	

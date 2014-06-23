@@ -54,19 +54,24 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 							 		docker.Containers = res.data.data.Containers;
 							 		docker.MemoryLimit = res.data.data.MemoryLimit;
 							 		docker.HealthStatus = res.data.data.HealthStatus;
+
+							 		docker.loaded = true;
 								}					
 						 	}else{
 						 		docker.Images = -1;
 						 		docker.Containers= -1;
 						 		docker.MemoryLimit = -1;
 						 		docker.HealthStatus = -1;
+						 		data.loaded = -1;
 						 	}
 				 		}, function( res){
-				 			console.log("something went wrong");
+				 			console.log("Failed to fetch docker status");
 					 		docker.Images = -1;
 					 		docker.Containers= -1;
 					 		docker.MemoryLimit = -1;
 					 		docker.HealthStatus = -1;
+
+					 		docker.loaded = -1;
 
 				 		});
 

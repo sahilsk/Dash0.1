@@ -22,11 +22,9 @@ module.exports = app.factory("ContainerFactory", ['$http', function($http){
 		if( !ContainerFactory.docker){
 			return [];
 		}
-
 		opts = _.defaults(opts, ContainerFactory.options);
-
 		return $http({	
-				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers", params: opts }
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers" , params: opts}
 				)
 				.success( function(res){
 					if( res.errors ){
@@ -39,6 +37,24 @@ module.exports = app.factory("ContainerFactory", ['$http', function($http){
 				});
 	}
 
+	ContainerFactory.inspectContainer = function( id){
+		if( !id){
+			return {};
+		}
+		return $http({	
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + id }
+				)
+				.success( function(res){
+					if( res.errors ){
+						console.log( "Error:" , res.errors);
+						return res;
+					}else{
+						console.log("Images: ", res.data);
+						return res.data;
+					}
+				});
+
+	}
 
 	
 	return ContainerFactory;

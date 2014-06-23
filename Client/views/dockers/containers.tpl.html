@@ -1,4 +1,6 @@
-<div class="panel panel-default"  id="containerTableWrapper" >
+<div class="row">
+   <div class="col-lg-12">
+		<div class="panel panel-default"  id="containerTableWrapper" >
 			<div class="panel-heading" >
 				<span class="glyphicon glyphicon-list-alt"> </span>
 				&nbsp; Containers List 
@@ -38,7 +40,7 @@
 					<tbody>
 							<tr ng-repeat="container in containers | filter:filterContainer | orderBy: container.Created">
 								<td> {{ $index + 1 }} </td>
-								<td> <a  container-id="{{ container.Id }}" ><span class="label label-info" title="{{ container.Id }}">{{ container.Id}} </span> </a>  </td>
+								<td> <a  ng-click="inspectContainer(container.Id)" container-id="{{ container.Id }}" ><span class="label label-info" title="{{ container.Id }}">{{ container.Id.substring(0, 14) }} </span> </a>  </td>
 								<td> {{ container.Image }} </td>
 								<td> {{ container.Command }} </td>
 								<td> {{ container.Created }} </td>
@@ -58,3 +60,16 @@
 			</table>
 			</div>
 		</div>
+
+
+   </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+
+<div class="row">
+   <div class="col-lg-12">
+        <div ui-view="processes"></div>
+   </div>
+    <!-- /.col-lg-12 -->
+</div>

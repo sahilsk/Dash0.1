@@ -33,22 +33,26 @@
                                 <td> {{ docker.title  }} </td>
                                 <td> {{ docker.host  }} </td>
                                 <td> {{ docker.port  }} </td>
-                                <td> {{docker.Images}} 
+                                <td> 
+                                    <span ng-if="docker.Images != -1" > {{docker.Images}}  </span>
                                     <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.Images==undefined" />
                                      <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.Images==-1"> FAIL </span>
                                 </td>
-                                <td> {{docker.Containers}} 
+                                <td> 
+                                    <span ng-if="docker.Images != -1" >{{docker.Containers}} </span>
                                     <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.Containers==undefined" /> 
                                     <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.Containers==-1"> FAIL </span>
                                 </td>
-                                <td> {{docker.MemoryLimit}} 
+                                <td>
+                                   <span ng-if="docker.Images != -1" > {{docker.MemoryLimit}} </span>
                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.MemoryLimit==undefined" />
                                    <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.MemoryLimit==-1"> FAIL </span>
                                 </td>
                                 <td> 
+
                                     <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="{{ docker.HealthStatus }} " />
-                                    <span class='label label-success glyphicon glyphicon-ok text-center' ng-show="docker.HealthStatus"> OK </span>
-                                    <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-hide="docker.HealthStatus && docker.HealthStatus == -1"> FAIL </span>
+                                    <span class='label label-success glyphicon glyphicon-ok text-center' ng-show="docker.HealthStatus &&  docker.HealthStatus !== -1"> OK </span>
+                                    <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-hide="docker.HealthStatus !== -1 && docker.HealthStatus"> FAIL </span>
                                 </td>
                                 <td>
                                     <a href="#"   class="label label-primary action-refresh" ng-click="getInfo(docker)" >
@@ -77,12 +81,25 @@
     <!-- /.col-lg-12 -->
 </div>
 
-<div class="row">
-   <div class="col-lg-12">
-        <div ui-view="images"></div>
-        <div ui-view="containers"></div>
 
-   </div>
-    <!-- /.col-lg-12 -->
+<div ui-view="containers"></div>
+<div ui-view="images"></div>
 
-</div>
+
+<div class="modal fade" id="launchInspectWindow">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" tilte="{{ $root.modal.title }}"> <span class="label label-danger ng-binding"> {{ $root.modal.title }} </span> </h4>
+      </div>
+      <div class="modal-body">
+        <pretty-json json="$root.modal.content"></pretty-json>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

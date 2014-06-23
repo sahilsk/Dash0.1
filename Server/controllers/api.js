@@ -276,8 +276,6 @@ router.get("/dockers/:id/containers/:containerId", function(req, res){
 			res.send( resData ).end();	
 
 		}else{
-
-			var resData = { error: null, data:null};
 			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
 
 			var container = docker.getContainer( containerId);
@@ -300,17 +298,28 @@ router.get("/dockers/:id/containers/:containerId", function(req, res){
 router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
 	var containerId = req.params.containerId;
 	var resData = { errors: null, data:null};
+	var id = req.params.id;
 
-	var container = docker.getContainer( containerId);
-		container.top( function(err,processes){
-		if(err) {
-			console.log("Error caught: " + err);
-			resData.errors = err;
+	Docklet.find( id, function( err, dockerHost){
+		if( err){
+			console.log("Error caught: " + error);
+			resData.errors = error;
 			res.send( resData ).end();	
+
 		}else{
-			console.log("processes: ", processes);
-			resData.data = processes;
-			res.send( resData ).end();	
+				var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
+				var container = docker.getContainer( containerId);
+				container.top( function(err,processes){
+					if(err) {
+						console.log("Error caught: " + err);
+						resData.errors = err;
+						res.send( resData ).end();	
+					}else{
+						console.log("processes: ", processes);
+						resData.data = processes;
+						res.send( resData ).end();	
+					}
+				});
 		}
 	});
 

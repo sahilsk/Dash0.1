@@ -37,12 +37,30 @@ module.exports = app.factory("ContainerFactory", ['$http', function($http){
 				});
 	}
 
-	ContainerFactory.inspectContainer = function( id){
-		if( !id){
+	ContainerFactory.inspectContainer = function( containerId){
+		if( !containerId){
 			return {};
 		}
 		return $http({	
-				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + id }
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + containerId }
+				)
+				.success( function(res){
+					if( res.errors ){
+						console.log( "Error:" , res.errors);
+						return res;
+					}else{
+						console.log("Images: ", res.data);
+						return res.data;
+					}
+				});
+	}
+
+	ContainerFactory.getProcesses = function( containerId ){
+		if( !containerId){
+			return {};
+		}
+		return $http({	
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + containerId  +"/top"}
 				)
 				.success( function(res){
 					if( res.errors ){

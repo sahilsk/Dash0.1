@@ -19,41 +19,38 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 	$locationProvider.html5Mode(true);
 	$stateProvider
 		.state('dockers', {
-			abstract: true,
+			//abstract: true,
 			url:'/dockers',
 			controller: "DockerListCtrl",
-			template:"<div ui-view> </div>"
-
-		})		
-		.state('dockers.list', {
-			url:'/list',
-			controller: "DockerListCtrl",
 			templateUrl: "dockers/list.tpl.html"
+
+		//	template:"<div ui-view> </div>"
+
 		})
 		.state('dockers.new', {
 			url:'/new',
 			controller: "DockerNewCtrl",
 			templateUrl: "dockers/new.tpl.html"
 		})
-
-		.state('dockers.list.panel', {
+		.state('dockers.explore', {
+			url: '/:id',
 			resolve:{
 				currentDocker: function($http, $stateParams) {
-				      		return $http
-								.get('/api/dockers/'+ $stateParams.id )
-								.success( function(res){
-									console.log( res);
-									if( res.errors ){
-										return null;
-									}
-									else{
-										return res.data;
-									}
-								})
-								.error( function(err){
-								 	console.log("Error :", err);
-								});
-				    	},
+		      		return $http
+						.get('/api/dockers/'+ $stateParams.id )
+						.success( function(res){
+							console.log( res);
+							if( res.errors ){
+								return null;
+							}
+							else{
+								return res.data;
+							}
+						})
+						.error( function(err){
+						 	console.log("Error :", err);
+						});
+				},
 			},
 			views:{
 				'images': {
@@ -61,13 +58,31 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 					controller: "DockerImageCtrl"
 				},
 				'containers': {
-					templateUrl: 'dockers/containers.tpl.html',
-					controller: "DockerContainerCtrl"				
+					templateUrl: "dockers/containers.tpl.html",
+					controller: "DockerContainerCtrl"		
 				}
-			},
-			url: '/:id'
-			
-		});
+			}
+		})
+		.state('dockers.explore.top', {
+			url: "/containers/:cid/top",
+			views: {
+				'processes': {
+					templateUrl: "dockers/processes.tpl.html",
+					controller: "DockerProcessCtrl"
+				}
+			}
+		})		
+/*		.state('dockers.images', {
+			url: '/:id/images',
+			template: "Image list"
+
+		})
+		.state('dockers.containers', {
+			url: '/:id/containers',
+			template: "Image list"
+
+		})	*/	
+
 	
 	
 	
@@ -88,18 +103,20 @@ app.run(['$rootScope', '$location', function($rootScope, $location) {
 
 
 module.exports = app;
-},{"./build/view/templates.js":3,"./lib/ng-prettyjson.min":10,"angular":18,"angular-module-animate":15,"angular-router-browserify":16,"angular-ui-router":17}],"app":[function(require,module,exports){
+},{"./build/view/templates.js":3,"./lib/ng-prettyjson.min":11,"angular":19,"angular-module-animate":16,"angular-router-browserify":17,"angular-ui-router":18}],"app":[function(require,module,exports){
 module.exports=require('8DlaiP');
 },{}],3:[function(require,module,exports){
 angular.module('templates-main', []).run(['$templateCache', function($templateCache) {
   $templateCache.put("dockers/containers.tpl.html",
-    "<div class=\"panel panel-default\" id=containerTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Containers List<div class=filters style=\"float: right\"><label>Include Size?</label>&nbsp; <input type=checkbox ng-change=getContainers() ng-model=opts.size ng-true-value=1 ng-false-value=0> | &nbsp;<label>Fetch All?</label>&nbsp; <input type=checkbox ng-change=getContainers() ng-model=opts.all ng-true-value=1 ng-false-value=0> | &nbsp;<label>Limit to:</label>&nbsp; <input type=number ng-change=getContainers() ng-model=opts.limit size=3 placeholder=100 style=width:50px> | &nbsp;<label>Search</label><input ng-model=filterContainer></div></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th>#</th><th>ID</th><th>Image</th><th>Command</th><th>Created</th><th>Status</th><th>Ports</th><th>SizeRw</th><th>SizeRootFs</th><th>Names</th></tr></thead><tbody><tr ng-repeat=\"container in containers | filter:filterContainer | orderBy: container.Created\"><td>{{ $index + 1 }}</td><td><a ng-click=inspectContainer(container.Id) container-id=\"{{ container.Id }}\"><span class=\"label label-info\" title=\"{{ container.Id }}\">{{ container.Id.substring(0, 14) }}</span></a></td><td>{{ container.Image }}</td><td>{{ container.Command }}</td><td>{{ container.Created }}</td><td>{{ container.Status }}</td><td>{{ container.Ports }}</td><td>{{ container.SizeRw }}</td><td>{{ container.SizeRootFs }}</td><td>{{ container.Names }}</td><td><a href=# class=\"label label-warning action-refresh\" container-id=\"{{ container.Id }}\"><span class=\"glyphicon glyphicon-search\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp;</td></tr></tbody></table></div></div>");
+    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\" id=containerTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Containers List {{docker.id}}<div class=filters style=\"float: right\"><label>Include Size?</label>&nbsp; <input type=checkbox ng-change=getContainers() ng-model=opts.size ng-true-value=1 ng-false-value=0> | &nbsp;<label>Fetch All?</label>&nbsp; <input type=checkbox ng-change=getContainers() ng-model=opts.all ng-true-value=1 ng-false-value=0> | &nbsp;<label>Limit to:</label>&nbsp; <input type=number ng-change=getContainers() ng-model=opts.limit size=3 placeholder=100 style=width:50px> | &nbsp;<label>Search</label><input ng-model=filterContainer></div><div style=\"float:none; clear:both\"></div></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th>#</th><th>ID</th><th>Image</th><th>Command</th><th>Created</th><th>Status</th><th>Ports</th><th>SizeRw</th><th>SizeRootFs</th><th>Names</th></tr></thead><tbody><tr ng-repeat=\"container in containers | filter:filterContainer | orderBy: container.Created\"><td>{{ $index + 1 }}</td><td><a href=# ng-click=inspectContainer(container.Id) container-id=\"{{ container.Id }}\"><span class=\"label label-info\" title=\"{{ container.Id }}\">{{ container.Id.substring(0, 14) }}</span></a></td><td>{{ container.Image }}</td><td>{{ container.Command }}</td><td>{{ container.Created }}</td><td>{{ container.Status }}</td><td>{{ container.Ports }}</td><td>{{ container.SizeRw }}</td><td>{{ container.SizeRootFs }}</td><td>{{ container.Names }}</td><td><a href=# ui-sref=\"dockers.explore.top({id: docker.id , cid:container.Id})\" class=\"label label-warning action-refresh\" container-id=\"{{ container.Id }}\"><span class=\"glyphicon glyphicon-search\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp;</td></tr></tbody></table></div></div></div></div><div class=row><div class=col-lg-12><div ui-view=processes></div></div></div>");
   $templateCache.put("dockers/images.tpl.html",
-    "<div class=\"panel panel-default\" id=imageTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Images List : {{docker.id}}<div class=filters style=\"float: right\"><label>Fetch All?</label>&nbsp; <input type=checkbox ng-change=getImages() ng-model=opts.all ng-true-value=1 ng-false-value=0> | &nbsp;<label>Search</label><input ng-model=filterImage></div><div style=\"float:none; clear:both\"></div></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\" id=imageTable><thead><tr><th>#</th><th>ID</th><th>RepoTags</th><th>Created</th><th>Size</th><th>Virtual Size</th></tr></thead><tbody><tr ng-repeat=\"image in images | orderBy: image.Created | filter:filterImage\"><td>{{ $index + 1 }}</td><td><a image-id=\"{{ image.Id }}\" ng-click=inspectImage(image.Id) title=\"{{ image.Id }}\"><span class=\"label label-primary\">{{ image.Id.substring(0, 14) }}</span></a></td><td>{{ image.RepoTags }}</td><td>{{ image.Created }}</td><td>{{ image.Size }}</td><td>{{ image.VirtualSize }}</td></tr></tbody></table></div></div>");
+    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\" id=imageTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Images List : {{docker.id}}<div class=filters style=\"float: right\"><label>Fetch All?</label>&nbsp; <input type=checkbox ng-change=getImages() ng-model=opts.all ng-true-value=1 ng-false-value=0> | &nbsp;<label>Search</label><input ng-model=filterImage></div><div style=\"float:none; clear:both\"></div></div><div class=\"panel-body table-responsive\"><table class=\"table table-striped table-bordered\" id=imageTable><thead><tr><th>#</th><th>ID</th><th>RepoTags</th><th>Created</th><th>Size</th><th>Virtual Size</th></tr></thead><tbody><tr ng-repeat=\"image in images | orderBy: image.Created | filter:filterImage\"><td>{{ $index + 1 }}</td><td><a href=# image-id=\"{{ image.Id }}\" ng-click=inspectImage(image.Id) title=\"{{ image.Id }}\"><span class=\"label label-primary\">{{ image.Id.substring(0, 14) }}</span></a></td><td>{{ image.RepoTags }}</td><td>{{ image.Created }}</td><td>{{ image.Size }}</td><td>{{ image.VirtualSize }}</td></tr></tbody></table></div></div></div></div>");
   $templateCache.put("dockers/list.tpl.html",
-    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\"><div class=panel-heading>DataTables Advanced Tables</div><div class=panel-body><div class=table-responsive><table class=\"table table-striped table-bordered table-hover\" id=dataTables-example><thead><tr><th>#</th><th>name</th><th>host</th><th>port</th><th>Images</th><th>containers</th><th>Memory Limit</th><th>Health Status</th><th><a ui-sref=dockers.new class=\"label label-primary\"><span class=\"glyphicon glyphicon-plus\"></span></a></th></tr></thead><tbody><tr ng-repeat=\"docker in dockers\"><td>{{ $index + 1 }}</td><td>{{ docker.title }}</td><td>{{ docker.host }}</td><td>{{ docker.port }}</td><td><span ng-if=\"docker.Images != -1\">{{docker.Images}}</span> <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.Images==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.Images==-1\">FAIL</span></td><td><span ng-if=\"docker.Images != -1\">{{docker.Containers}}</span> <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.Containers==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.Containers==-1\">FAIL</span></td><td><span ng-if=\"docker.Images != -1\">{{docker.MemoryLimit}}</span> <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.MemoryLimit==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.MemoryLimit==-1\">FAIL</span></td><td><img src=/images/refreshing_x24.gif alt=loading... ng-show=\"{{ docker.HealthStatus }} \"> <span class=\"label label-success glyphicon glyphicon-ok text-center\" ng-show=\"docker.HealthStatus &&  docker.HealthStatus !== -1\">OK</span> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-hide=\"docker.HealthStatus !== -1 && docker.HealthStatus\">FAIL</span></td><td><a href=# class=\"label label-primary action-refresh\" ng-click=getInfo(docker)><span class=\"glyphicon glyphicon-refresh\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp; <a ui-sref=\"dockers.list.panel({id: docker.id })\" class=\"label label-success action-explore\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> &nbsp; <a href=# class=\"label label-danger action-delete\" docker-id=\"{{ docker.id }}\" ng-click=destroy(docker.id)><span class=\"glyphicon glyphicon-remove\"></span></a></td></tr></tbody></table></div></div></div></div></div><div class=row><div class=col-lg-12><div ui-view=containers></div></div></div><div class=row><div class=col-lg-12><div ui-view=images></div></div></div><div class=\"modal fade\" id=launchInspectWindow><div class=modal-dialog><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-hidden=true>&times;</button><h4 class=modal-title><span class=\"label label-info ng-binding\">{{ $root.modal.title }}</span></h4></div><div class=modal-body><pretty-json json=$root.modal.content></pretty-json></div><div class=modal-footer><button type=button class=\"btn btn-default\" data-dismiss=modal>Close</button></div></div></div></div>");
+    "<div class=row><div class=col-lg-12><div class=\"panel panel-default\"><div class=panel-heading>Docker Host List</div><div class=panel-body><div class=table-responsive><table class=\"table table-striped table-bordered table-hover\" id=dataTables-example><thead><tr><th>#</th><th>name</th><th>host</th><th>port</th><th>Images</th><th>containers</th><th>Memory Limit</th><th>Health Status</th><th><a ui-sref=dockers.new class=\"label label-primary\"><span class=\"glyphicon glyphicon-plus\"></span></a></th></tr></thead><tbody><tr ng-repeat=\"docker in dockers\"><td>{{ $index + 1 }}</td><td>{{ docker.title }}</td><td>{{ docker.host }}</td><td>{{ docker.port }}</td><td><span ng-if=\"docker.Images != -1\">{{docker.Images}}</span> <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.Images==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.Images==-1\">FAIL</span></td><td><span ng-if=\"docker.Images != -1\">{{docker.Containers}}</span> <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.Containers==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.Containers==-1\">FAIL</span></td><td><span ng-if=\"docker.Images != -1\">{{docker.MemoryLimit}}</span> <img src=/images/refreshing_x24.gif alt=loading... ng-show=\"docker.MemoryLimit==undefined\"> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-show=\"docker.MemoryLimit==-1\">FAIL</span></td><td><img src=/images/refreshing_x24.gif alt=loading... ng-show=\"{{ docker.HealthStatus }} \"> <span class=\"label label-success glyphicon glyphicon-ok text-center\" ng-show=\"docker.HealthStatus &&  docker.HealthStatus !== -1\">OK</span> <span class=\"label label-danger glyphicon glyphicon-warning-sign text-center\" ng-hide=\"docker.HealthStatus !== -1 && docker.HealthStatus\">FAIL</span></td><td><a href=# class=\"label label-primary action-refresh\" ng-click=getInfo(docker)><span class=\"glyphicon glyphicon-refresh\" data-toggle=tooltip data-placement=bottom title=Refresh></span></a> &nbsp; <a ui-sref=\"dockers.explore({id: docker.id })\" class=\"label label-success action-explore\" docker-id=\"{{ docker.id }}\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> &nbsp; <a href=# class=\"label label-danger action-delete\" docker-id=\"{{ docker.id }}\" ng-click=destroy(docker.id)><span class=\"glyphicon glyphicon-remove\"></span></a></td></tr></tbody></table></div></div></div></div></div><div ui-view=containers></div><div ui-view=images></div><div class=\"modal fade\" id=launchInspectWindow><div class=modal-dialog><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-hidden=true>&times;</button><h4 class=modal-title><span class=\"label label-danger ng-binding\">{{ $root.modal.title }}</span></h4></div><div class=modal-body><pretty-json json=$root.modal.content></pretty-json></div><div class=modal-footer><button type=button class=\"btn btn-default\" data-dismiss=modal>Close</button></div></div></div></div>");
   $templateCache.put("dockers/new.tpl.html",
     "<h1>New Docker</h1><div ng-controller=DockerNewCtrl><div class=\"alert alert-dismissable alert-{{$root.notification.type}}\" ng-hide=\"$root.notification === 'undefined' || $root.notification.type === null\"><button type=button class=close data-dismiss=alert aria-hidden=true>×</button> {{ $root.notification.message }}</div><form name=newDockerForm class=cssForm role=form ng-submit=\"newDockerForm.$valid &&  submit()\" novalidate><div class=form-group><label class=control-label for=hostname>Nick</label><input name=title class=form-control ng-model=docker.title placeholder=\"eg. Mickie\" required></div><div class=form-group><label class=control-label for=hostname>Hostname</label><input name=hostname class=form-control ng-model=docker.hostname placeholder=\"eg. 10.2.1.1\" required></div><div class=form-group><label class=control-label for=port>Port</label><input name=port type=number class=form-control ng-model=docker.port placeholder=\"eg. 4273\" pattern=[0-9]*[0-9]+></div><div class=form-group><label class=control-label for=healthCheckPath>Health check path</label><input name=healthCheckPath class=form-control ng-model=docker.healthCheckPath placeholder=\"eg. /ping\"></div><button type=button class=\"btn btn-outline btn-primary\" ng-click=\"newDockerForm.$valid &&  submit()\">Submit</button></form></div>");
+  $templateCache.put("dockers/processes.tpl.html",
+    "<div class=\"panel panel-default\" id=processesTableWrapper><div class=panel-heading><span class=\"glyphicon glyphicon-list-alt\"></span> &nbsp; Process List : {{ containerId}}</div><div class=\"panel-body table-responsive\"><div ng-if=!processes.length class=info><div class=\"text-center text-info\">No process running</div></div><table class=\"table table-striped table-borderedf imageTable\" ng-if=\"processes.length > 1\"><thead><tr><th ng-repeat=\"title in processes.Titles\">{{ title}}</th></tr></thead><tbody><tr ng-repeat=\"process in processes.Processes\"><td ng-repeat=\"field in process\">{{ field }}</td></tr></tbody></table></div></div>");
 }]);
 
 },{}],4:[function(require,module,exports){
@@ -148,7 +165,7 @@ module.exports  = app.controller('DockerContainerCtrl',
 }
 ]);
 
-},{"../app":"8DlaiP","underscore":20}],5:[function(require,module,exports){
+},{"../app":"8DlaiP","underscore":21}],5:[function(require,module,exports){
 (function (global){
 
 var _ = require("underscore");
@@ -200,7 +217,7 @@ module.exports  = app.controller('DockerImageCtrl',
 ]);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../app":"8DlaiP","underscore":20}],6:[function(require,module,exports){
+},{"../app":"8DlaiP","underscore":21}],6:[function(require,module,exports){
 var app = require("../app");
 var _ = require("underscore");
 
@@ -310,7 +327,7 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 }]);
 
 
-},{"../app":"8DlaiP","../services/docker_factory.js":13,"underscore":20}],7:[function(require,module,exports){
+},{"../app":"8DlaiP","../services/docker_factory.js":14,"underscore":21}],7:[function(require,module,exports){
 
 var _ = require("underscore");
 var app = require("../app");
@@ -345,7 +362,49 @@ module.exports  = app.controller('DockerNewCtrl', ['$scope', '$http', '$location
 		}
 }]);
 
-},{"../app":"8DlaiP","underscore":20}],8:[function(require,module,exports){
+},{"../app":"8DlaiP","underscore":21}],8:[function(require,module,exports){
+(function (global){
+
+var _ = require("underscore");
+var app = require("../app");
+var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null);
+
+
+module.exports  = app.controller('DockerProcessCtrl', 
+		['$rootScope', '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory',
+		 function( $rootScope, $scope, $http, $stateParams, ImageFactory, ContainerFactory ){
+		 	$scope.processes = [];
+			$scope.opts = ContainerFactory.options;
+			$scope.docker  = ContainerFactory.docker;
+			console.log( $scope.docker );
+
+		 	$scope.containerId = $stateParams.cid;
+		 	console.log("Container processes to fetch: ", $scope.containerId);
+
+			$scope.getProcesses = function(  containerId ){
+				if( !containerId){
+					return;
+				}
+				ContainerFactory.getProcesses( containerId).then( function(res){
+					if( res.data.error){
+						console.log('Error fetching processes: ', res.data.error)
+					}else{
+						$scope.processes = res.data.data;
+				 		console.log("Processes: ", res.data.data);
+					}
+				}, function(err){
+					console.log("Failed to fetch processes: ", err);
+				});				
+			}
+
+			$scope.getProcesses( $scope.containerId );
+
+
+}
+]);
+
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../app":"8DlaiP","underscore":21}],9:[function(require,module,exports){
 
 var _ = require("underscore");
 var app = require("../app");
@@ -364,7 +423,7 @@ module.exports  = app.controller('DockerShowCtrl',
 }
 ]);
 
-},{"../app":"8DlaiP","underscore":20}],9:[function(require,module,exports){
+},{"../app":"8DlaiP","underscore":21}],10:[function(require,module,exports){
 var app = require("../app");
 var templates = require("../build/view/templates");
 
@@ -377,7 +436,7 @@ module.exports = app.directive('dockerList',  function(){
 	} 
 	 
 });
-},{"../app":"8DlaiP","../build/view/templates":3}],10:[function(require,module,exports){
+},{"../app":"8DlaiP","../build/view/templates":3}],11:[function(require,module,exports){
 /** 
 * @license ng-prettyjson - v0.1.0
 * (c) 2013 Julien VALERY https://github.com/darul75/ng-prettyjson
@@ -385,7 +444,7 @@ module.exports = app.directive('dockerList',  function(){
 **/
 var angular = require("angular");
 module.exports = angular.module("ngPrettyJson",[]).directive("prettyJson",["ngPrettyJsonFunctions",function(a){"use strict";var b=angular.isDefined;return{restrict:"AE",scope:{json:"=",prettyJson:"="},replace:!0,template:"<pre></pre>",link:function(c,d,e){var f,g=b(e.json)?"json":"prettyJson",h=function(c){return b(c)?d.html(a.syntaxHighlight(c)):d.empty()};f=c.$watch(g,function(a){angular.isObject(a)&&b(a.json)?(f(),c.$watch(g+".json",function(a){h(a)},!0)):h(a)},!0)}}}]).factory("ngPrettyJsonFunctions",function(){var a={entities:/((&)|(<)|(>))/g,json:/"(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|(null))\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g},b=["&amp;","&lt;","&gt;"],c=["number","string","key","boolean","null"],d=function(){var a=arguments.length-2;do a--;while(!arguments[a]);return a},e=function(a){var b;if(arguments.length<7)throw new Error("markup() must be called from String.prototype.replace()");return b=d.apply(null,arguments),'<span class="'+c[b]+'">'+a+"</span>"},f=function(){var a;if(arguments.length<5)throw new Error("makeEntities() must be called from String.prototype.replace()");return a=d.apply(null,arguments),b[a-2]},g=function(b){return angular.isString(b)||(b=JSON.stringify(b,null,2)),angular.isDefined(b)?b.replace(a.entities,f).replace(a.json,e):void 0};return{syntaxHighlight:g,makeEntities:f,markup:e,rx:a}});
-},{"angular":18}],11:[function(require,module,exports){
+},{"angular":19}],12:[function(require,module,exports){
 
 var angular = require("angular");
 var app = require("./app");
@@ -395,6 +454,7 @@ require("./controllers/docker_new_ctrl");
 require("./controllers/docker_show_ctrl");
 require("./controllers/docker_image_ctrl");
 require("./controllers/docker_container_ctrl");
+require("./controllers/docker_process_ctrl");
 
 
 
@@ -414,7 +474,7 @@ window.onload = function () {
 };
 
 */
-},{"./app":"8DlaiP","./controllers/docker_container_ctrl":4,"./controllers/docker_image_ctrl":5,"./controllers/docker_list_ctrl":6,"./controllers/docker_new_ctrl":7,"./controllers/docker_show_ctrl":8,"./directives/docker_list":9,"./services/container_factory":12,"./services/docker_factory":13,"./services/image_factory":14,"angular":18}],12:[function(require,module,exports){
+},{"./app":"8DlaiP","./controllers/docker_container_ctrl":4,"./controllers/docker_image_ctrl":5,"./controllers/docker_list_ctrl":6,"./controllers/docker_new_ctrl":7,"./controllers/docker_process_ctrl":8,"./controllers/docker_show_ctrl":9,"./directives/docker_list":10,"./services/container_factory":13,"./services/docker_factory":14,"./services/image_factory":15,"angular":19}],13:[function(require,module,exports){
 var app = require("../app");
 var _ = require("underscore");
 
@@ -454,12 +514,30 @@ module.exports = app.factory("ContainerFactory", ['$http', function($http){
 				});
 	}
 
-	ContainerFactory.inspectContainer = function( id){
-		if( !id){
+	ContainerFactory.inspectContainer = function( containerId){
+		if( !containerId){
 			return {};
 		}
 		return $http({	
-				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + id }
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + containerId }
+				)
+				.success( function(res){
+					if( res.errors ){
+						console.log( "Error:" , res.errors);
+						return res;
+					}else{
+						console.log("Images: ", res.data);
+						return res.data;
+					}
+				});
+	}
+
+	ContainerFactory.getProcesses = function( containerId ){
+		if( !containerId){
+			return {};
+		}
+		return $http({	
+				method:"GET", url: "/api/dockers/"+ ContainerFactory.docker.id + "/containers/" + containerId  +"/top"}
 				)
 				.success( function(res){
 					if( res.errors ){
@@ -477,7 +555,7 @@ module.exports = app.factory("ContainerFactory", ['$http', function($http){
 	return ContainerFactory;
 
 }] );
-},{"../app":"8DlaiP","underscore":20}],13:[function(require,module,exports){
+},{"../app":"8DlaiP","underscore":21}],14:[function(require,module,exports){
 var app = require("../app");
 
 
@@ -571,7 +649,7 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	return DockerFactory;
 
 }] );
-},{"../app":"8DlaiP"}],14:[function(require,module,exports){
+},{"../app":"8DlaiP"}],15:[function(require,module,exports){
 var app = require("../app");
 var _ = require("underscore");
 
@@ -627,7 +705,7 @@ module.exports = app.factory("ImageFactory", ['$http', function($http){
 	return ImageFactory;
 
 }] );
-},{"../app":"8DlaiP","underscore":20}],15:[function(require,module,exports){
+},{"../app":"8DlaiP","underscore":21}],16:[function(require,module,exports){
 /*
  AngularJS v1.2.17
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -657,7 +735,7 @@ if(e)return F(b,function(){N(b,c);O(b);d()}),e;d()},setClass:function(a,c,d,e){d
 window.angular);
 //# sourceMappingURL=angular-animate.min.js.map
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
 * @license AngularJS v1.2.15
 * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -1584,7 +1662,7 @@ module.exports = function(angular, undefined) {
 
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.10
@@ -4808,12 +4886,12 @@ angular.module('ui.router.compat')
   .provider('$route', $RouteProvider)
   .directive('ngView', $ViewDirective);
 })(window, window.angular);
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 require('./lib/angular.min.js');
 
 module.exports = angular;
 
-},{"./lib/angular.min.js":19}],19:[function(require,module,exports){
+},{"./lib/angular.min.js":20}],20:[function(require,module,exports){
 /*
  AngularJS v1.2.18
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -5028,7 +5106,7 @@ a);a!==c&&l.removeOption(c);l.addOption(a)}):l.addOption(e.value);d.on("$destroy
 dc)}))})(window,document);!window.angular.$$csp()&&window.angular.element(document).find("head").prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>');
 //# sourceMappingURL=angular.min.js.map
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -6373,4 +6451,4 @@ dc)}))})(window,document);!window.angular.$$csp()&&window.angular.element(docume
   }
 }).call(this);
 
-},{}]},{},[11])
+},{}]},{},[12])

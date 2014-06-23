@@ -4,7 +4,7 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                DataTables Advanced Tables
+                Docker Host List
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
@@ -58,7 +58,7 @@
                                     <a href="#"   class="label label-primary action-refresh" ng-click="getInfo(docker)" >
                                         <span class="glyphicon glyphicon-refresh"  data-toggle="tooltip" data-placement="bottom" title="Refresh"> </span>
                                     </a> &nbsp;
-                                    <a   ui-sref="dockers.list.panel({id: docker.id })" class="label label-success action-explore" docker-id="{{ docker.id }}" >
+                                    <a   ui-sref="dockers.explore({id: docker.id })" class="label label-success action-explore" docker-id="{{ docker.id }}" >
                                         <span class="glyphicon glyphicon-eye-open"> </span>
                                     </a> &nbsp;
                                     <a href="#" class="label label-danger action-delete" docker-id="{{ docker.id }}" ng-click="destroy(docker.id)" >
@@ -91,7 +91,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" tilte="{{ $root.modal.title }}"> <span class="label label-danger ng-binding"> {{ $root.modal.title }} </span> </h4>
+        <h4 class="modal-title" > <span class="label label-danger ng-binding"> {{ $root.modal.title }} </span> </h4>
       </div>
       <div class="modal-body">
         <pretty-json json="$root.modal.content"></pretty-json>

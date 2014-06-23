@@ -31,7 +31,7 @@
 					<tbody>
 							<tr ng-repeat="image in images | orderBy: image.Created | filter:filterImage"  >
 								<td> {{ $index + 1 }} </td>
-								<td> <a  image-id="{{ image.Id }}" ng-click="inspectImage(image.Id)"	 title="{{ image.Id }}" > 
+								<td> <a href="#" image-id="{{ image.Id }}" ng-click="inspectImage(image.Id)"	 title="{{ image.Id }}" > 
 										<span class="label label-primary"> {{ image.Id.substring(0, 14) }} </span> 
 									</a>
 								</td>

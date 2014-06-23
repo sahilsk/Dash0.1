@@ -18,40 +18,38 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 	$locationProvider.html5Mode(true);
 	$stateProvider
 		.state('dockers', {
-			abstract: true,
+			//abstract: true,
 			url:'/dockers',
 			controller: "DockerListCtrl",
-			template:"<div ui-view> </div>"
+			templateUrl: "dockers/list.tpl.html"
 
-		})		
+		//	template:"<div ui-view> </div>"
+
+		})
 		.state('dockers.new', {
 			url:'/new',
 			controller: "DockerNewCtrl",
 			templateUrl: "dockers/new.tpl.html"
 		})
-		.state('dockers.list', {
-			url:'/list',
-			controller: "DockerListCtrl",
-			templateUrl: "dockers/list.tpl.html"
-		})		
-		.state('dockers.list.panel', {
+		.state('dockers.explore', {
+			url: '/:id',
 			resolve:{
 				currentDocker: function($http, $stateParams) {
-				      		return $http
-								.get('/api/dockers/'+ $stateParams.id )
-								.success( function(res){
-									console.log( res);
-									if( res.errors ){
-										return null;
-									}
-									else{
-										return res.data;
-									}
-								})
-								.error( function(err){
-								 	console.log("Error :", err);
-								});
-				    	},
+		      		return $http
+						.get('/api/dockers/'+ $stateParams.id )
+						.success( function(res){
+							console.log( res);
+							if( res.errors ){
+								return null;
+							}
+							else{
+								return res.data;
+							}
+						})
+						.error( function(err){
+						 	console.log("Error :", err);
+						});
+				},
 			},
 			views:{
 				'images': {
@@ -59,17 +57,31 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 					controller: "DockerImageCtrl"
 				},
 				'containers': {
-					templateUrl: 'dockers/containers.tpl.html',
-					controller: "DockerContainerCtrl"				
+					templateUrl: "dockers/containers.tpl.html",
+					controller: "DockerContainerCtrl"		
 				}
-			},
-			url: '/:id'
-			
+			}
 		})
-		.state('docker.list.panel', {
+		.state('dockers.explore.top', {
+			url: "/containers/:cid/top",
+			views: {
+				'processes': {
+					templateUrl: "dockers/processes.tpl.html",
+					controller: "DockerProcessCtrl"
+				}
+			}
+		})		
+/*		.state('dockers.images', {
+			url: '/:id/images',
+			template: "Image list"
 
+		})
+		.state('dockers.containers', {
+			url: '/:id/containers',
+			template: "Image list"
 
-		});
+		})	*/	
+
 	
 	
 	

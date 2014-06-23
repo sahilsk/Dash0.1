@@ -7,6 +7,7 @@ require("./controllers/docker_new_ctrl");
 require("./controllers/docker_show_ctrl");
 require("./controllers/docker_image_ctrl");
 require("./controllers/docker_container_ctrl");
+require("./controllers/docker_process_ctrl");
 
 
 

@@ -16,7 +16,12 @@ module.exports  = app.controller('DockerContainerCtrl',
 
 			console.log( $scope.docker );
 
+			$('#containerDateTimeFilter').datetimepicker();
+
 			$scope.getContainers = function(){	
+				$scope.opts[ $scope.opts.when] = + new Date( $scope.opts[ $scope.opts.when] ) /1000;
+								console.log( $scope.opts );
+
 				ContainerFactory.getContainers( $scope.opts ).then( function(res){
 					//console.log( res);
 					ContainerFactory.containers = res.data.data;

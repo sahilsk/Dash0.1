@@ -46,11 +46,17 @@
   "browser": {
     "jQuery": "./Server/public/bower_components/jquery/dist/jquery.js",
     "jQuery.dataTable": "./Server/public/template/js/plugins/dataTables/jquery.dataTables.js",
+    "jQuery.datetimepicker" :"./Server/public//bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" ,
     "bDatatable": "./Server/public/template/js/plugins/dataTables/dataTables.bootstrap.js"
   },
   "browserify-shim": {
     "jQuery": "global:$",
     "jQuery.dataTable": {
+      "depends": [
+        "jQuery:$"
+      ]
+    },
+    "jQuery.datetimepicker" :  {
       "depends": [
         "jQuery:$"
       ]

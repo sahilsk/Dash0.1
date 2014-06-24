@@ -6,14 +6,28 @@
 				&nbsp; Containers List {{docker.id}}
 
 				<div class="filters" style='float: right;' >
-					<label> Include Size? </label>  &nbsp;
-					<input type='checkbox' ng-change="getContainers()" ng-model="opts.size" ng-true-value="1"  ng-false-value="0" />
+
+					<label class="checkbox-inline" >
+						<select class="form-control" ng-model="opts.when" >	
+							<option value="since" > Since </option>
+							<option value="before"> Before </option>
+						</select>
+						<input type="text" ng-change="getContainers()" ng-model="opts[opts.when]"  id="containerDateTimeFilter" />
+					</label>  &nbsp;
+
+					<label class="checkbox-inline" >
+						<input type='checkbox' ng-change="getContainers()" ng-model="opts.size" ng-true-value="1"  ng-false-value="0" />
+					 Include Size?
+					</label>  &nbsp;
 					| &nbsp;
-					<label> Fetch All? </label>  &nbsp;
-					<input type='checkbox' ng-change="getContainers()" ng-model="opts.all" ng-true-value="1"  ng-false-value="0"  />
+					<label class="checkbox-inline" > 
+						<input type='checkbox'  name="fetchAllContainer" ng-change="getContainers()" ng-model="opts.all" ng-true-value="1"  ng-false-value="0"  /> Fetch All? 
+					</label>  &nbsp;
 					| &nbsp;
-					<label> Limit to:  </label>  &nbsp;
-					<input type='number' ng-change="getContainers()" ng-model="opts.limit" size='3' placeholder="100" style="width:50px"   />
+					<label> 
+						Limit to: 
+						<input type='number' ng-change="getContainers()" ng-model="opts.limit" size='3' placeholder="100" style="width:60px"   />
+					 </label>  &nbsp;
 					| &nbsp;					
 					<label> Search</label>
 					<input type='text' ng-model='filterContainer'  />
@@ -52,7 +66,7 @@
 								<td> {{ container.SizeRootFs }} </td>
 								<td> {{ container.Names }} </td>
 								<td>
-									<a href="#" ui-sref="dockers.explore.top({id: docker.id , cid:container.Id})"   class="label label-warning action-refresh" container-id="{{ container.Id }}" >
+									<a href="#" ui-sref="dockers.list.explore.top({id: docker.id , cid:container.Id})"   class="label label-warning action-refresh" container-id="{{ container.Id }}" >
 										<span class="glyphicon glyphicon-search"  data-toggle="tooltip" data-placement="bottom" title="Refresh"> </span>
 									</a> &nbsp;
 								</td>

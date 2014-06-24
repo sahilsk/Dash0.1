@@ -10,7 +10,7 @@ module.exports  = app.controller('DockerImageCtrl',
 			$scope.images = [];
 			$scope.objectToInpect = {};
 
-			$scope.opts = ContainerFactory.options;
+			$scope.opts = ImageFactory.options;
 			$scope.docker = currentDocker.data.data;
 
 			ImageFactory.docker = $scope.docker;

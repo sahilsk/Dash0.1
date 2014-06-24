@@ -11,12 +11,12 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 				url: "/api/dockers/list"
 			})
 			.success( function(data){
-					if(data.status != 200 ){
-						console.log( data.errors);
-					}else{
-						//console.log( data);
-						return data;
-					}	
+				if(data.status != 200 ){
+					console.log( data.errors);
+				}else{
+					//console.log( data);
+					return data;
+				}
 			})
 			.error( function(){
 				alert("something goes wrong while retreiving docker list");
@@ -38,7 +38,6 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 				})
 
 	}
-
 
 	DockerFactory.save = function( docker){
 		return $http

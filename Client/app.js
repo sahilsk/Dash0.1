@@ -18,20 +18,22 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 	$locationProvider.html5Mode(true);
 	$stateProvider
 		.state('dockers', {
-			//abstract: true,
+			abstract: true,
 			url:'/dockers',
+			template:"<div ui-view> </div>"
+
+		})
+		.state( 'dockers.list', {
+			url: '/list',
 			controller: "DockerListCtrl",
 			templateUrl: "dockers/list.tpl.html"
-
-		//	template:"<div ui-view> </div>"
-
 		})
 		.state('dockers.new', {
 			url:'/new',
 			controller: "DockerNewCtrl",
 			templateUrl: "dockers/new.tpl.html"
 		})
-		.state('dockers.explore', {
+		.state('dockers.list.explore', {
 			url: '/:id',
 			resolve:{
 				currentDocker: function($http, $stateParams) {
@@ -62,7 +64,7 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 				}
 			}
 		})
-		.state('dockers.explore.top', {
+		.state('dockers.list.explore.top', {
 			url: "/containers/:cid/top",
 			views: {
 				'processes': {

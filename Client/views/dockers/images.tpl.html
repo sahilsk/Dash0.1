@@ -7,10 +7,12 @@
 				<span class="glyphicon glyphicon-list-alt"> </span>
 				&nbsp; Images List  : {{docker.id}}
 				<div class="filters" style='float: right;' >
-					<label> Fetch All? </label>  &nbsp;
-					<input type='checkbox' ng-change="getImages()" ng-model="opts.all" ng-true-value="1"  ng-false-value="0"  />
+					<label class="checkbox-inline" > 
+						<input type='checkbox'  name="fetchAllImages" ng-change="getImages()" ng-model="opts.all" ng-true-value="1"  ng-false-value="0"  />
+						Fetch All?  &nbsp;		
+					</label>				
 					| &nbsp;					
-					<label> Search</label>
+					<label > Search</label>
 					<input type='text' ng-model='filterImage' />
 				</div>
 				<div style="float:none; clear:both"></div>

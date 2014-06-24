@@ -28,7 +28,7 @@
                             </tr> 
                         </thead>
                         <tbody>
-                            <tr ng-repeat="docker in dockers" >
+                            <tr ng-repeat="docker in dockers"  ng-class="{selected: docker.id === $root.isSelectedDocker}" >
                                 <td> {{ $index + 1 }} </td>
                                 <td> {{ docker.title  }} </td>
                                 <td> {{ docker.host  }} </td>
@@ -63,7 +63,7 @@
                                         <span class="sr-only">Toggle Dropdown</span>
                                       </button>
                                       <ul class="dropdown-menu" role="menu">
-                                            <li><a href="#" ui-sref="dockers.list.explore({id: docker.id })"> <span class="glyphicon glyphicon-eye-open"> </span> Explore </a></li>
+                                            <li><a href="#" ui-sref="dockers.list.explore({id: docker.id })"  ng-click="setSelected(docker.id)" > <span class="glyphicon glyphicon-eye-open"> </span> Explore </a></li>
 
                                             <li class="divider"></li>
                                             <li><a href="#" ng-click="destroy(docker.id)" ><span class="glyphicon glyphicon-remove"> </span> Remove</a></li>

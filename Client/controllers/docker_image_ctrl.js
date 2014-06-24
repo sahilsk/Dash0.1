@@ -8,17 +8,28 @@ module.exports  = app.controller('DockerImageCtrl',
 		['$rootScope', '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory', 'currentDocker',
 		 function( $rootScope, $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
 			$scope.images = [];
+			$scope.docker = null;
+
 			$scope.objectToInpect = {};
 
 			$scope.opts = ImageFactory.options;
-			$scope.docker = currentDocker.data.data;
 
-			ImageFactory.docker = $scope.docker;
-	 		ContainerFactory.docker = $scope.docker;
 
-			console.log( $scope.docker );
+		 	if( typeof currentDocker !== "undefined" && currentDocker.hasOwnProperty("data") && currentDocker.data.data !== null ){
+				$scope.docker = currentDocker.data.data;
+				ImageFactory.docker = $scope.docker;
+		 		ContainerFactory.docker = $scope.docker;
+		 	}else{
+				console.log( "Docker not found. Invalid Docker");
+		 	}
+
 
 			$scope.getImages = function(){
+
+				if( !$scope.docker){
+					return;
+				}
+
 				ImageFactory.getImages($scope.opts).then( function(res){
 					$scope.images = res.data.data.images;
 					$scope.info = res.data.data.info;

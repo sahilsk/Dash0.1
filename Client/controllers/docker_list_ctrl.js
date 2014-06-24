@@ -4,8 +4,11 @@ var _ = require("underscore");
 require("../services/docker_factory.js");
 
 
-module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','DockerFactory', function( $rootScope, $scope, DockerFactory){
+module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','DockerFactory',  function( $rootScope, $scope, DockerFactory){
 		$scope.dockers =[];
+		$rootScope.isSelectedDocker = null;
+
+
 		$scope.dockers = DockerFactory.dockers;
 
 		DockerFactory.getDockers().then( function(res){
@@ -16,8 +19,13 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 
 		}.bind(this));
 		
+		$scope.setSelected = function( id){
+			$rootScope.isSelectedDocker = id;
+		}
+
+
 		$scope.destroy = function(id){
-			if( confirm("Are you sure?")){
+			if( confirm("Are you sure you want to delete this docker?")){
 
 				DockerFactory.delete(id).then( function(data){
 					if( !data.errors){
@@ -96,11 +104,6 @@ module.exports = app.controller('DockerListCtrl', ['$rootScope', '$scope','Docke
 							console.log("something went wrong: ", res);
 
 						});
-		}
-
-		$scope.explore = function( docker){
-
-
 		}
 
 

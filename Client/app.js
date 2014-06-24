@@ -34,7 +34,7 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			templateUrl: "dockers/new.tpl.html"
 		})
 		.state('dockers.list.explore', {
-			url: '/:id',
+			url: '^/dockers/:id',
 			resolve:{
 				currentDocker: function($http, $stateParams) {
 		      		return $http
@@ -43,8 +43,7 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 							console.log( res);
 							if( res.errors ){
 								return null;
-							}
-							else{
+							}else{
 								return res.data;
 							}
 						})
@@ -65,7 +64,7 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			}
 		})
 		.state('dockers.list.explore.top', {
-			url: "/containers/:cid/top",
+			url: "^/dockers/:id/containers/:cid/top",
 			views: {
 				'processes': {
 					templateUrl: "dockers/processes.tpl.html",

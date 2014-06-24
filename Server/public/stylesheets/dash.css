@@ -22,3 +22,8 @@
 	max-height: 800px;
 	overflow:auto;
 }
+
+
+tr.selected td{
+ background-color: #FFFFCF !important; 
+}

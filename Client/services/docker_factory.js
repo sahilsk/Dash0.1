@@ -8,8 +8,7 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	DockerFactory.getDockers = function(){
 		return $http({
 				method:'GET',
-				url: "/api/dockers/list",
-				timeout: 5000
+				url: "/api/dockers/list"
 			})
 			.success( function(data){
 					if(data.status != 200 ){
@@ -67,8 +66,7 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	DockerFactory.info = function( id){
 		return $http({
 				method:'GET',
-				url: '/api/dockers/'+id+'/info',
-				timeout: 3000
+				url: '/api/dockers/'+id+'/info'
 				})
 				.success( function(res){
 					console.log(res);

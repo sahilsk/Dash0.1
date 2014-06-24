@@ -24,6 +24,14 @@ module.exports = function(grunt) {
           debug: false
         }
       },
+      stage: {
+        options: {
+          port: 5001,
+          node_env: 'staging',
+          script: 'Server/bin/www',
+          debug: false
+        }
+      },
       prod: {
         options: {
           port: 3001,

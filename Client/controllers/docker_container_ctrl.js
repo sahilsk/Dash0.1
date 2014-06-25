@@ -7,6 +7,7 @@ module.exports  = app.controller('DockerContainerCtrl',
 		['$rootScope', '$scope', '$http', '$stateParams', 'ImageFactory','ContainerFactory', 'currentDocker',
 		 function( $rootScope,  $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
 		 	$scope.containers = [];
+		 	$scope.hasLoaded = 0;
 		 	$scope.docker  = null;
 			$scope.objectToInpect = {};
 
@@ -26,7 +27,8 @@ module.exports  = app.controller('DockerContainerCtrl',
 
 			$('#containerDateTimeFilter').datetimepicker();
 
-			$scope.getContainers = function(){	
+			$scope.getContainers = function(){
+				$scope.hasLoaded = 0;			
 				if( !$scope.docker ){
 					return ;
 				}
@@ -34,12 +36,19 @@ module.exports  = app.controller('DockerContainerCtrl',
 				$scope.opts[ $scope.opts.when] = + new Date( $scope.opts[ $scope.opts.when] ) /1000;
 				console.log( $scope.opts );
 
-				ContainerFactory.getContainers( $scope.opts ).then( function(res){
-					//console.log( res);
-					ContainerFactory.containers = res.data.data;
-					$scope.containers = ContainerFactory.containers ;
-					console.log( "Containers: ",$scope.containers);
-				})
+				ContainerFactory
+					.getContainers( $scope.opts )
+					.then(
+						function(res){
+							//console.log( res);
+						 	$scope.hasLoaded = 1;
+							ContainerFactory.containers = res.data.data;
+							$scope.containers = ContainerFactory.containers ;
+							console.log( "Containers: ",$scope.containers);
+					}, function(err){
+							$scope.hasLoaded = -1;
+							console.log("Failed to fetch containers: ", err);
+					});			
 
 			}
 

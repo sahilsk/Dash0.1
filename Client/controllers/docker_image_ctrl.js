@@ -9,6 +9,7 @@ module.exports  = app.controller('DockerImageCtrl',
 		 function( $rootScope, $scope, $http, $stateParams, ImageFactory, ContainerFactory, currentDocker){
 			$scope.images = [];
 			$scope.docker = null;
+			$scope.hasLoaded = 0;
 
 			$scope.objectToInpect = {};
 
@@ -25,22 +26,26 @@ module.exports  = app.controller('DockerImageCtrl',
 
 
 			$scope.getImages = function(){
-
+				$scope.hasLoaded = 0;
 				if( !$scope.docker){
 					return;
 				}
 
-				ImageFactory.getImages($scope.opts).then( function(res){
-					$scope.images = res.data.data.images;
-					$scope.info = res.data.data.info;
-					$scope.version = res.data.data.version;
-				 	console.log("Images: ", res.data.data);
+				ImageFactory
+					.getImages($scope.opts)
+					.then( 
+						function(res){
+							$scope.images = res.data.data.images;
+							$scope.info = res.data.data.info;
+							$scope.version = res.data.data.version;
+						 	console.log("Images: ", res.data.data);
+						 	$scope.hasLoaded = 1;
+						//	$('#imageTable').dataTable();
 
-				//	$('#imageTable').dataTable();
-
-				}, function(err){
-					console.log("Failed to fetch images: ", err);
-				});				
+					}, function(err){
+							$scope.hasLoaded = -1;
+							console.log("Failed to fetch images: ", err);
+					});				
 			}
 
 			$scope.getImages();

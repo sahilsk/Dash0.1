@@ -47,7 +47,9 @@
     "jQuery": "./Server/public/bower_components/jquery/dist/jquery.js",
     "jQuery.dataTable": "./Server/public/template/js/plugins/dataTables/jquery.dataTables.js",
     "jQuery.datetimepicker" :"./Server/public//bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" ,
-    "bDatatable": "./Server/public/template/js/plugins/dataTables/dataTables.bootstrap.js"
+    "bDatatable": "./Server/public/template/js/plugins/dataTables/dataTables.bootstrap.js",
+    "Raphael": "./Server/public/template/js/plugins/morris/raphael-2.1.0.min.js",
+    "Morris" : "./Server/public/template/js/plugins/morris/morris.js"
   },
   "browserify-shim": {
     "jQuery": "global:$",
@@ -60,7 +62,10 @@
       "depends": [
         "jQuery:$"
       ]
-    }
+    },
+    "Morris": "global:Morris",
+    "Raphael": "global:Raphael"
+
   },
   "browserify": {
     "transform": [

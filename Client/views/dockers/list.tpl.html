@@ -1,5 +1,17 @@
- <div class="row">
+ <div class="row" >
 
+    <div class="col-md-6">
+         <div id="morris-image-stat"></div>
+
+    </div>
+    <div class="col-md-6">
+         <div id="morris-container-stat"></div>
+
+    </div>
+
+</div>
+
+ <div class="row">
 
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -28,29 +40,29 @@
                             </tr> 
                         </thead>
                         <tbody>
-                            <tr ng-repeat="docker in dockers"  ng-class="{selected: docker.id === $root.isSelectedDocker}" >
+                            <tr ng-repeat="docker in dockers" ng-click="drawStats(docker)"  ng-class="{selected: docker.id === $root.isSelectedDocker}" >
                                 <td> {{ $index + 1 }} </td>
                                 <td> {{ docker.title  }} </td>
                                 <td> {{ docker.host  }} </td>
                                 <td> {{ docker.port  }} </td>
                                 <td> 
                                     <span ng-if="docker.Images != -1" > {{docker.Images}}  </span>
-                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.Images==undefined" />
+                                    <img src="/images/refreshing_x24.gif" alt="loading..." ng-show="docker.Images==undefined" />
                                      <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.Images==-1"> FAIL </span>
                                 </td>
                                 <td> 
                                     <span ng-if="docker.Images != -1" >{{docker.Containers}} </span>
-                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.Containers==undefined" /> 
+                                    <img src="/images/refreshing_x24.gif" alt="loading..." ng-show="docker.Containers==undefined" /> 
                                     <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.Containers==-1"> FAIL </span>
                                 </td>
                                 <td>
                                    <span ng-if="docker.Images != -1" > {{docker.MemoryLimit}} </span>
-                                   <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="docker.MemoryLimit==undefined" />
+                                   <img src="/images/refreshing_x24.gif" alt="loading..." ng-show="docker.MemoryLimit==undefined" />
                                    <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-show="docker.MemoryLimit==-1"> FAIL </span>
                                 </td>
                                 <td> 
 
-                                    <img src="/images/refreshing_x24.gif", alt="loading..." ng-show="{{ docker.HealthStatus }} " />
+                                    <img src="/images/refreshing_x24.gif" alt="loading..." ng-show="{{ docker.HealthStatus }} " />
                                     <span class='label label-success glyphicon glyphicon-ok text-center' ng-show="docker.HealthStatus &&  docker.HealthStatus !== -1"> OK </span>
                                     <span class='label label-danger glyphicon glyphicon-warning-sign text-center' ng-hide="docker.HealthStatus !== -1 && docker.HealthStatus"> FAIL </span>
                                 </td>

@@ -37,7 +37,7 @@
 			</div>
 			<div class="panel-body table-responsive">
 				<table class="table table-striped table-bordered">
-					<thead>
+					<thead ng-hide="hasLoaded !== 1">
 						<tr>
 							<th> # </th>
 							<th> ID  </th>
@@ -54,6 +54,14 @@
 						</tr>
 					</thead>
 					<tbody>
+
+							<tr colspan="10" ng-hide="hasLoaded === 1">
+								<img src="/images/preloader.gif" alt="loading..." ng-hide="hasLoaded === 1|| hasLoaded === -1" />
+								<div class="alert alert-danger" ng-hide="hasLoaded !== -1">
+                               	  	Failed to load containers. <a href="#" class="alert-link" ng-click="getContainers()" > Try Again </a>.
+                         	  	 </div>
+							</tr>
+
 							<tr ng-repeat="container in containers | filter:filterContainer | orderBy: container.Created">
 								<td> {{ $index + 1 }} </td>
 								<td> <a href="#" ng-click="inspectContainer(container.Id)" container-id="{{ container.Id }}" ><span class="label label-info" title="{{ container.Id }}">{{ container.Id.substring(0, 14) }} </span> </a>  </td>

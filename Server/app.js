@@ -1,4 +1,6 @@
 var express = require('express');
+var session = require('express-session');
+
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
@@ -7,10 +9,12 @@ var bodyParser = require('body-parser');
 var docker = require("./controllers/dockers");
 var index = require("./controllers/index");
 var api = require("./controllers/api");
-
+var config = require("config");
 
 
 var app = express();
+app.use(session({secret: 'Dash-S3CR37'}))
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +31,28 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/build", express.static(path.join(__dirname, '../Client/build')));
 
 
+//Authentication :{ usernmae: admin, password: admin123 }
+app.use( function( req, res, next){
+    console.log("Request Url: ", req.url);
+    if( req.url === "/login"){
+        next();
+    }else{
+        //console.log("Checking authentication...", config);
+
+        if( req.session.hasOwnProperty("user") && req.session.user !== null ){
+            next();
+        }else{
+            console.log("Private Area");
+            res.redirect("/login");
+        }
+    }
+
+})
+
+
+//app.use("/login', user");
+
+
 app.use('/', index);
 app.use('/dockers', docker);
 app.use('/api', api);
@@ -38,7 +64,7 @@ app.use(function(req, res, next) {
     next(err);
 });
 
-/// error handlers
+// error handlers
 
 // development error handler
 // will print stacktrace
@@ -61,6 +87,9 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+
+
+
 
 
 module.exports = app;

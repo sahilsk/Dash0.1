@@ -17,7 +17,7 @@ module.exports = app.factory("ImageFactory", ['$http', function($http){
 		}
 
 		opts = _.defaults(opts, ImageFactory.options);
-		return $http({	
+			return $http({	
 				method:"GET", url: "/api/dockers/"+ ImageFactory.docker.id + "/images", params: opts }
 				)
 				.success( function(res){

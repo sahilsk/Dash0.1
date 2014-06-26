@@ -21,23 +21,19 @@ module.exports  = app.controller('DockerImageCtrl',
 				ImageFactory.docker = $scope.docker;
 		 		ContainerFactory.docker = $scope.docker;
 		 	}else{
-				console.log( "Docker not found. Invalid Docker");
+				console.log( "Docker not found. Invalid Docker Id");
 		 	}
-
 
 			$scope.getImages = function(){
 				$scope.hasLoaded = 0;
 				if( !$scope.docker){
 					return;
 				}
-
 				ImageFactory
 					.getImages($scope.opts)
 					.then( 
 						function(res){
-							$scope.images = res.data.data.images;
-							$scope.info = res.data.data.info;
-							$scope.version = res.data.data.version;
+							$scope.images = res.data.data;
 						 	console.log("Images: ", res.data.data);
 						 	$scope.hasLoaded = 1;
 						//	$('#imageTable').dataTable();
@@ -49,6 +45,7 @@ module.exports  = app.controller('DockerImageCtrl',
 			}
 
 			$scope.getImages();
+
 
 			$scope.inspectImage = function(id){
 				ImageFactory.inspectImage( id).then( function(res){

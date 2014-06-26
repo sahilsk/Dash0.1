@@ -1,6 +1,7 @@
 
 var _ = require("underscore");
 var app = require("../app");
+var jQuery = require("jQuery");
 
 
 module.exports  = app.controller('DockerContainerCtrl', 
@@ -25,7 +26,8 @@ module.exports  = app.controller('DockerContainerCtrl',
 			}
 
 
-			$('#containerDateTimeFilter').datetimepicker();
+			jQuery('#containerDateTimeFilter').datetimepicker();
+
 
 			$scope.getContainers = function(){
 				$scope.hasLoaded = 0;			

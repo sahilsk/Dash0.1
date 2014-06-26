@@ -120,11 +120,67 @@ router.get("/dockers/:id/info", function(req, res){
 				resData.data = null;
 				res.send(resData).end();
 			}
-
 		}
 	})
 });
 
+
+router.get("/dockers/:id/infoWithVersion", function(req, res){
+
+	if(! req.params.id){
+		res.send("Invalid request").end();
+	}
+
+	var resData = { errors: null, data: null};
+
+	Docklet.find(req.params.id, function( err, obj){
+		if( err){
+			console.log("Error finding docker: " + error);
+			resData.errors = error;
+			res.send(resData).end();
+			return;		
+
+		}else{
+			console.log("Docker found: ", obj);
+			var docker = new require('dockerode')({host: "http://"+obj.host, port: obj.port});
+			var healthCheck = require("../lib/healthCheck");
+			
+			async.parallel(
+			{
+			    info: function(callback){
+			     	docker.info(function(err, info) {
+						if(err) {
+							callback(err, info);
+						}else{
+							console.log("info: ", info);
+							resData.data = info;
+							healthCheck( "http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
+								info.HealthStatus = isOK;
+								callback(null, info);
+							} );					
+						}			     		
+					})
+			    },
+			    version: function(callback){
+			    	docker.version( function(err, version){
+			    		callback(err, version);
+			    	})
+				 }
+			},
+			function(err, results) {
+			    if(err){
+					console.log("Error querying docker :" + err);
+					resData.errors = err;
+					res.send( resData ).end();
+			    }else{
+			    	resData.data = { info: results.info, version:  results.version };
+			    	res.send( resData ).end();
+			    }
+
+			});
+		}
+	})
+});
 
 router.get("/dockers/:id/images", function(req, res){
 
@@ -145,42 +201,21 @@ router.get("/dockers/:id/images", function(req, res){
 
 		}else{
 			var docker = new require('dockerode')({host: "http://"+obj.host, port: obj.port});
-			async.parallel(
-			{
-			    info: function(callback){
-			     	docker.info(function(err, info) {
-						callback(err, info);
-					})
-			    },
-			    version: function(callback){
-			    	docker.version( function(err, version){
-			    		callback(err, version);
-			    	})
-				 },
-				 images: function(callback){
-				 	docker.listImages(listOpts, function(err, images) {
-						callback(err, images);
-					});
-				 }
-			},
-			function(err, results) {
-			    if(err){
+
+		 	docker.listImages(listOpts, function(err, images) {
+				if(err){
 					console.log("Error querying docker :" + err);
 					resData.errors = err;
 					res.send( resData ).end();
 			    }else{
-			    	resData.data = { info: results.info, version:  results.version, images: results.images, docker: obj };
-			    	resData.data.id = id;
-    				resData.data.dockerHost = obj;
+			    	resData.data = images;
 			    	res.send( resData ).end();
-			    }
-
+			    };
 			});
 
 
 		}
 	});
-
 });
 
 router.get("/dockers/:id/images/:imageId", function(req, res){
@@ -214,7 +249,6 @@ router.get("/dockers/:id/images/:imageId", function(req, res){
 
 		}
 	});
-
 });
 
 router.get("/dockers/:id/containers", function(req,res){
@@ -261,8 +295,6 @@ router.get("/dockers/:id/containers", function(req,res){
 	})
 });
 
-
-
 router.get("/dockers/:id/containers/:containerId", function(req, res){
 
 	var id = req.params.id;
@@ -292,7 +324,6 @@ router.get("/dockers/:id/containers/:containerId", function(req, res){
 
 		}
 	});
-
 });
 
 router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
@@ -307,19 +338,19 @@ router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
 			res.send( resData ).end();	
 
 		}else{
-				var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
-				var container = docker.getContainer( containerId);
-				container.top( function(err,processes){
-					if(err) {
-						console.log("Error caught: " + err);
-						resData.errors = err;
-						res.send( resData ).end();	
-					}else{
-						console.log("processes: ", processes);
-						resData.data = processes;
-						res.send( resData ).end();	
-					}
-				});
+			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
+			var container = docker.getContainer( containerId);
+			container.top( function(err,processes){
+				if(err) {
+					console.log("Error caught: " + err);
+					resData.errors = err;
+					res.send( resData ).end();	
+				}else{
+					console.log("processes: ", processes);
+					resData.data = processes;
+					res.send( resData ).end();	
+				}
+			});
 		}
 	});
 

@@ -195,6 +195,8 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint',  'concat', 'uglify']);
+  grunt.registerTask('build', ['html2js', 'browserify']);
   grunt.registerTask('server', [ 'html2js','browserify', 'express:dev', 'watch']);
+
 
 };

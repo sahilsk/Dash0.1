@@ -41,15 +41,16 @@
     "angular-module-animate": "~1.2.17",
     "redis": "~0.10.3",
     "jquery": "~2.1.1",
-    "browserify-shim": "~3.6.0"
+    "browserify-shim": "~3.6.0",
+    "express-session": "~1.5.1"
   },
   "browser": {
     "jQuery": "./Server/public/bower_components/jquery/dist/jquery.js",
     "jQuery.dataTable": "./Server/public/template/js/plugins/dataTables/jquery.dataTables.js",
-    "jQuery.datetimepicker" :"./Server/public//bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" ,
+    "jQuery.datetimepicker": "./Server/public//vendor/eonasdan-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js",
     "bDatatable": "./Server/public/template/js/plugins/dataTables/dataTables.bootstrap.js",
     "Raphael": "./Server/public/template/js/plugins/morris/raphael-2.1.0.min.js",
-    "Morris" : "./Server/public/template/js/plugins/morris/morris.js"
+    "Morris": "./Server/public/template/js/plugins/morris/morris.js"
   },
   "browserify-shim": {
     "jQuery": "global:$",
@@ -58,14 +59,13 @@
         "jQuery:$"
       ]
     },
-    "jQuery.datetimepicker" :  {
+    "jQuery.datetimepicker": {
       "depends": [
         "jQuery:$"
       ]
     },
     "Morris": "global:Morris",
     "Raphael": "global:Raphael"
-
   },
   "browserify": {
     "transform": [

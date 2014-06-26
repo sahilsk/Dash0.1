@@ -11,5 +11,9 @@
       "dbName": "",
       "host": "localhost",
       "port": 6379
+    },
+    "auth" : {
+      "username": "admin",
+      "password": "admin123"
     }
   }

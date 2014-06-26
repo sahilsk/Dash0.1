@@ -17,6 +17,14 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 
 	$locationProvider.html5Mode(true);
 	$stateProvider
+		.state("logout", {
+			url: "/logout",
+			controller: function(){
+				console.log("logout here");
+				window.location.href= window.location.protocol + "//" + window.location.host + "/logout";
+			},
+			template: "<h3> Logging out... </h3>"
+		})
 		.state('dockers', {
 			abstract: true,
 			url:'/dockers',

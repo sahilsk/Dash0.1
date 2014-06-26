@@ -24,6 +24,8 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 
 	}
 
+	
+
 	DockerFactory.find = function(id){
 		return $http
 				.get('/api/dockers/'+id)
@@ -49,7 +51,7 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	}
 
 	DockerFactory.delete = function( id){
-		console.log("sendind delete request");
+		console.log("sending delete request");
 		return $http
 			.delete("/api/dockers/"+id)
 			.success( function( res){
@@ -65,7 +67,8 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 	DockerFactory.info = function( id){
 		return $http({
 				method:'GET',
-				url: '/api/dockers/'+id+'/info'
+				url: '/api/dockers/'+id+'/info',
+				timeout: 30000
 				})
 				.success( function(res){
 					console.log(res);
@@ -77,13 +80,22 @@ module.exports = app.factory("DockerFactory", ['$http', function($http){
 				})
 	}
 
-	DockerFactory.getImages = function( id){
-			return $http
-					.get('/api/dockers/' + id + '/images')
 
-	}
-
-
+	DockerFactory.infoWithVersion = function( id){
+		return $http({
+				method:'GET',
+				url: '/api/dockers/'+id+'/infoWithVersion',
+				timeout: 30000
+				})
+				.success( function(res){
+					console.log(res);
+					return res;
+				})
+				.error( function(err){
+				 	console.log("Error: ", err);
+				 	return {};
+				})
+	}	
 	
 	return DockerFactory;
 

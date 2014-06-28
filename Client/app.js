@@ -1,6 +1,6 @@
 var angular = require('angular');
 var uiRouter = require('angular-ui-router');
-var angular_animate = require('angular-module-animate');
+//var angular_animate = require('angular-module-animate');
 var ngPrettyJson = require("./lib/ng-prettyjson.min");
 
 
@@ -35,6 +35,61 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 			url: '/list',
 			controller: "DockerListCtrl",
 			templateUrl: "dockers/list.tpl.html"
+		})
+		.state('dockers.list.containers', {
+			url: '^/dockers/:id/containers',
+			
+			resolve:{
+				currentDocker: function($http, $stateParams) {
+		      		return $http
+						.get('/api/dockers/'+ $stateParams.id )
+						.success( function(res){
+							console.log( res);
+							if( res.errors ){
+								return null;
+							}else{
+								return res.data;
+							}
+						})
+						.error( function(err){
+						 	console.log("Error :", err);
+						});
+				},
+			},			
+			views:{
+				'containers':{
+					controller: "DockerContainerCtrl",
+					templateUrl: "dockers/containers.tpl.html"
+				}
+			}
+
+		})
+		.state('dockers.list.images', {
+			url: '^/dockers/:id/images',
+			resolve:{
+				currentDocker: function($http, $stateParams) {
+		      		return $http
+						.get('/api/dockers/'+ $stateParams.id )
+						.success( function(res){
+							console.log( res);
+							if( res.errors ){
+								return null;
+							}else{
+								return res.data;
+							}
+						})
+						.error( function(err){
+						 	console.log("Error :", err);
+						});
+				},
+			},
+			views:{
+				'images':{
+					templateUrl: 'dockers/images.tpl.html',
+					controller: "DockerImageCtrl"
+				}
+			}
+
 		})
 		.state('dockers.new', {
 			url:'/new',

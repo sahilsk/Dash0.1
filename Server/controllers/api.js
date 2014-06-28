@@ -27,7 +27,13 @@ router.get('/dockers/list', function(req, res) {
 
 router.post('/dockers', function( req, res){
 	console.log('Saving docker: ', req.body);
-	var resData = { errors: null, data:null};
+	res.type('json');
+
+	var resData = { errors: null, data: null};
+	if(! req.body.id){
+		resData.errors = "Invalid request";
+		res.send(resData).end();
+	}
 	try{
 		Docklet.save(req.body, function(err, docklet){
 			if(err){
@@ -48,7 +54,14 @@ router.post('/dockers', function( req, res){
 
 
 router.get("/dockers/:id", function(req,res){
-	var resData = { errors: null, data : null};
+	res.type('json');
+
+	var resData = { errors: null, data: null};
+	if(! req.params.id){
+		resData.errors = "Invalid request";
+		res.send(resData).end();
+	}
+
 	Docklet.find(req.params.id, function( err, obj){
 			if( err){
 				console.log("error caught: " + error);
@@ -59,7 +72,7 @@ router.get("/dockers/:id", function(req,res){
 				resData.data = obj;
 				res.send( resData);
 			}
-		});
+	});
 });
 
 
@@ -79,14 +92,17 @@ router.delete("/dockers/:id", function(req, res){
 
 
 router.get("/dockers/:id/info", function(req, res){
-
-	if(! req.params.id){
-		res.send("Invalid request").end();
-	}
+			res.send("jkjkjk").end();
+			return;
 
 	var resData = { errors: null, data: null};
-
+	if(! req.params.id){
+		resData.errors = "Invalid request";
+		res.send(resData).end();
+		return;
+	}
 	Docklet.find(req.params.id, function( err, obj){
+		res.type('json');
 		if( err){
 			console.log("Error finding docker: " + error);
 			resData.errors = error;
@@ -97,7 +113,8 @@ router.get("/dockers/:id/info", function(req, res){
 			console.log("Docker found: ", obj);
 			var docker = new require('dockerode')({host: "http://"+obj.host, port: obj.port});
 			var healthCheck = require("../lib/healthCheck");
-			
+
+
 			try{
 				docker.info(function(err, info) {
 					if(err) {
@@ -106,12 +123,17 @@ router.get("/dockers/:id/info", function(req, res){
 						res.send(resData).end();	
 						return;
 					}else{
-						console.log("info: ", info);
+						//console.log("info: ", info);
 						resData.data = info;
-						healthCheck( "http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
-							resData.data.HealthStatus = isOK;
-							console.log( resData);
-							res.send(resData).end();			
+						res.send({a:"resData"}).end();
+						return;
+						healthCheck("http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
+							//resData.data.HealthStatus = isOK;
+							res.type("json");
+							//console.log( resData);
+
+							res.send("sonu was here");
+							res.end();			
 						} );					
 					}
 				});
@@ -126,7 +148,7 @@ router.get("/dockers/:id/info", function(req, res){
 
 
 router.get("/dockers/:id/infoWithVersion", function(req, res){
-
+	res.type('json');
 	if(! req.params.id){
 		res.send("Invalid request").end();
 	}
@@ -207,9 +229,12 @@ router.get("/dockers/:id/images", function(req, res){
 					console.log("Error querying docker :" + err);
 					resData.errors = err;
 					res.send( resData ).end();
+					return;
 			    }else{
+			    	console.log( images);
 			    	resData.data = images;
 			    	res.send( resData ).end();
+			    	return;
 			    };
 			});
 

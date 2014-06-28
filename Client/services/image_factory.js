@@ -17,18 +17,18 @@ module.exports = app.factory("ImageFactory", ['$http', function($http){
 		}
 
 		opts = _.defaults(opts, ImageFactory.options);
-			return $http({	
-				method:"GET", url: "/api/dockers/"+ ImageFactory.docker.id + "/images", params: opts }
-				)
-				.success( function(res){
-					if( res.errors ){
-						console.log( "Error:" , res.errors);
-						return res;
-					}else{
-						console.log("Images: ", res.data);
-						return res.data;
-					}
-				});
+		return $http({	
+			method:"GET", url: "/api/dockers/"+ ImageFactory.docker.id + "/images", params: opts }
+			)
+			.success( function(res){
+				if( res.errors ){
+					console.log( "Error:" , res.errors);
+					return res;
+				}else{
+					console.log("Images: ", res.data);
+					return res.data;
+				}
+			});
 	}
 
 	ImageFactory.inspectImage = function( id){

@@ -7,7 +7,7 @@ var ngPrettyJson = require("./lib/ng-prettyjson.min");
 
 //var toaster = require("./lib/toaster");
 
-require('angular-router-browserify')(angular);
+//require('angular-router-browserify')(angular);
 require("./build/view/templates.js");
 
 

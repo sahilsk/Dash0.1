@@ -13,7 +13,6 @@ var config = require("config");
 
 
 var app = express();
-app.use(session({secret: 'Dash-S3CR37'}))
 
 
 // view engine setup
@@ -27,6 +26,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+app.use(session({secret: 'Dash-S3CR37'}))
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/build", express.static(path.join(__dirname, '../Client/build')));
 

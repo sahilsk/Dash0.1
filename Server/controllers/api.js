@@ -92,8 +92,6 @@ router.delete("/dockers/:id", function(req, res){
 
 
 router.get("/dockers/:id/info", function(req, res){
-			res.send("jkjkjk").end();
-			return;
 
 	var resData = { errors: null, data: null};
 	if(! req.params.id){
@@ -123,17 +121,16 @@ router.get("/dockers/:id/info", function(req, res){
 						res.send(resData).end();	
 						return;
 					}else{
-						//console.log("info: ", info);
+						console.log("info: ", info);
 						resData.data = info;
-						res.send({a:"resData"}).end();
-						return;
 						healthCheck("http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
-							//resData.data.HealthStatus = isOK;
+							resData.data.HealthStatus = isOK;
 							res.type("json");
 							//console.log( resData);
 
-							res.send("sonu was here");
-							res.end();			
+							res.send( resData);
+							//res.end();		
+							return;	
 						} );					
 					}
 				});
@@ -148,9 +145,11 @@ router.get("/dockers/:id/info", function(req, res){
 
 
 router.get("/dockers/:id/infoWithVersion", function(req, res){
-	res.type('json');
+	var resData = { errors: null, data: null};
 	if(! req.params.id){
-		res.send("Invalid request").end();
+		resData.errors = "Invalid request";
+		res.send(resData).end();
+		return;
 	}
 
 	var resData = { errors: null, data: null};

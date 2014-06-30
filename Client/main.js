@@ -12,10 +12,12 @@ require("./controllers/docker_process_ctrl");
 
 
 require("./directives/docker_list");
+require("./directives/datepicker")
 
 require("./services/docker_factory");
 require("./services/image_factory");
 require("./services/container_factory");
+
 
 
 

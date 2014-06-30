@@ -26,9 +26,6 @@ module.exports  = app.controller('DockerContainerCtrl',
 			}
 
 
-			jQuery('#containerDateTimeFilter').datetimepicker();
-
-
 			$scope.getContainers = function(){
 				$scope.hasLoaded = 0;			
 				if( !$scope.docker ){

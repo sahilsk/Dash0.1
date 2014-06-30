@@ -159,7 +159,7 @@ router.get("/dockers/:id/infoWithVersion", function(req, res){
 			console.log("Error finding docker: " + error);
 			resData.errors = error;
 			res.send(resData).end();
-			return;		
+			return;
 
 		}else{
 			console.log("Docker found: ", obj);

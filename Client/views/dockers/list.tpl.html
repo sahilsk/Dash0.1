@@ -115,9 +115,6 @@
                                         <span class="sr-only">Toggle Dropdown</span>
                                       </button>
                                       <ul class="dropdown-menu" role="menu">
-                                            <li ng-show="docker.HealthStatus" >
-                                               <a href="#" ui-sref="dockers.list.explore({id: docker.id })"  ng-click="setSelected(docker.id)" > <span class="glyphicon glyphicon-eye-open"> </span> Explore </a>
-                                            </li>
 
                                             <li ng-show="docker.HealthStatus" >
                                               <a href="#" ui-sref="dockers.list.containers({id: docker.id })"  ng-click="setSelected(docker.id)" > <span class="glyphicon glyphicon-eye-open"> </span> Container </a>
@@ -127,6 +124,10 @@
                                             <li ng-show="docker.HealthStatus" >
                                               <a href="#" ui-sref="dockers.list.images({id: docker.id })"  ng-click="setSelected(docker.id)" > <span class="glyphicon glyphicon-eye-open"> </span> Images </a>
                                             </li>
+
+                                            <li ng-show="docker.HealthStatus" >
+                                               <a href="#" ui-sref="dockers.list.explore({id: docker.id })"  ng-click="setSelected(docker.id)" > <span class="glyphicon glyphicon-eye-open"> </span> Explore </a>
+                                            </li>                                            
 
                                             <li class="divider"></li>
                                             <li><a href="#" ng-click="destroy(docker.id)" ><span class="glyphicon glyphicon-remove"> </span> Remove</a></li>

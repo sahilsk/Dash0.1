@@ -89,7 +89,6 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 					controller: "DockerImageCtrl"
 				}
 			}
-
 		})
 		.state('dockers.new', {
 			url:'/new',
@@ -126,7 +125,7 @@ app.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', functi
 				}
 			}
 		})
-		.state('dockers.list.explore.top', {
+		.state('dockers.list.containers.top', {
 			url: "^/dockers/:id/containers/:cid/top",
 			views: {
 				'processes': {

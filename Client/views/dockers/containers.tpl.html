@@ -62,7 +62,7 @@
                          	  	 </div>
 							</tr>
 
-							<tr ng-repeat="container in containers | filter:filterContainer | orderBy: container.Created">
+							<tr ng-repeat="container in containers | filter:filterContainer | orderBy: container.Created" ng-class="{selected: container.Id === $root.isSelectedContainer}" >
 								<td> {{ $index + 1 }} </td>
 								<td> <a href="#" ng-click="inspectContainer(container.Id)" container-id="{{ container.Id }}" ><span class="label label-info" title="{{ container.Id }}">{{ container.Id.substring(0, 14) }} </span> </a>  </td>
 								<td> {{ container.Image }} </td>

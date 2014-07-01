@@ -12,10 +12,14 @@ module.exports  = app.controller('DockerProcessCtrl',
 			$scope.docker  = ContainerFactory.docker;
 			console.log( $scope.docker );
 
+			$rootScope.isSelectedContainer = null;
+
 		 	$scope.containerId = $stateParams.cid;
 		 	console.log("Container processes to fetch: ", $scope.containerId);
 
 			$scope.getProcesses = function(  containerId ){
+				$rootScope.isSelectedContainer = containerId;
+
 				if( !containerId){
 					return;
 				}

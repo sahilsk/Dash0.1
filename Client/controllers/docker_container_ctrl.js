@@ -11,6 +11,7 @@ module.exports  = app.controller('DockerContainerCtrl',
 		 	$scope.hasLoaded = 0;
 		 	$scope.docker  = null;
 			$scope.objectToInpect = {};
+			$scope.isSelectedContainer = null;
 
 		 	$scope.opts = ContainerFactory.options;
 
@@ -58,7 +59,6 @@ module.exports  = app.controller('DockerContainerCtrl',
 					console.log( res.data);
 					$rootScope.modal = { title: "Container: "+id.substring(0,14), content:  res.data.data };
 					$("#launchInspectWindow").modal();
-
 				}, function(err){
 					console.log("Failed to inspect container");
 				});

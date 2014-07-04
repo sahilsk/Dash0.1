@@ -32,11 +32,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/build", express.static(path.join(__dirname, '../Client/build')));
 
 
-//Authentication :{ usernmae: admin, password: admin123 }
+//Authentication :{ username: admin, password: admin123 }
 app.use( function( req, res, next){
     console.log("Request Url: ", req.url);
     if( req.url === "/login"){
-        next();
+        if( req.session.hasOwnProperty("user") && req.session.user !== null ){
+            res.redirect("/");
+        }else{
+            next();
+        }
     }else{
         //console.log("Checking authentication...", config);
 

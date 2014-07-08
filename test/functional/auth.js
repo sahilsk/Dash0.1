@@ -4,20 +4,21 @@ var expect = require('chai').expect;
 
 describe("auth", function(){
 	before( function(done){
-        client.init().url("http://localhost:3000/dockers", done);
+        client.init(done);
 	});
 
 	describe("GET /", function(){
 		it('should redirect to /login', function(done){
-		 	client.getTitle( function(err, title){
-		 		expect(title).to.have.string("Login");
-		 		done();
-		 	});
+			client
+				.url("http://localhost:3000/dockers")
+				.getTitle( function(err, title){
+		 			expect(title).to.have.string("Login");
+		 			done();
+		 		});
 		});
 
 		it("should not accept empty fields", function(done){
 			client.submitForm("form", function(err){
-
 				if(err){
 					console.log(err);
 					done(err);
@@ -29,7 +30,6 @@ describe("auth", function(){
 		})
 
 		it("should not allow invalid credentials", function(done){
-
 			//Add username
 			client.addValue("form div:nth-child(1) input", "invalid-username", function(err){
 				if(err)

@@ -75,7 +75,6 @@ describe("docker screen", function(){
 			.waitFor("#docker-stat", 5000, function(err, res){
 				expect(err).to.be.null;
 			})
-			.pause(3000)
 			.call(done);
 		})
 
@@ -84,10 +83,14 @@ describe("docker screen", function(){
 				.click("#dockerHostTable  tbody > tr > td:nth-child(9)  button.btn.btn-info.dropdown-toggle.btn-sm", function(err,res){
 					expect(err).to.be.null;
 				})
+				.waitForVisible("#dockerHostTable  tbody > tr  td:nth-child(9)   ul  li:nth-child(1)  a", 10000 )
 				.click('#dockerHostTable  tbody > tr  td:nth-child(9)   ul  li:nth-child(1)  a', function(err,res){
 					expect(err).to.be.null;
 				})
 				.waitFor("#containerTableWrapper table", 10000, function(err){
+					expect(err).to.be.null;
+				})
+				.scroll("#containerTableWrapper table", function(err){
 					expect(err).to.be.null;
 				})
 				.call(done);
@@ -96,31 +99,25 @@ describe("docker screen", function(){
 
 		it('should get container info', function(done){
 			client
-				.waitFor( "#containerTableWrapper table tbody  tr:nth-child(2)  td:nth-child(2) >  a", 10000, function(err,res){
+				.waitFor("#containerTableWrapper table tbody  tr:nth-child(2)  td:nth-child(2) >  a", 10000, function(err,res){
 					expect(err).to.be.null;
 				})
-				.pause(10000)
-				.click("#containerTableWrapper table tbody  tr:nth-child(2)  td:nth-child(2) > a", function(err){
-					expect(err).to.be.null;
-				})			
-				.waitFor("#launchInspectWindow", 3000, function(err){
-					expect(err).to.be.null;
+				.click("#containerTableWrapper table  tbody  tr:nth-child(2) td:nth-child(2) > a", function(err,res){
+				 		expect(err).to.be.null;
 				})
-				.pause(5000)
-				.isVisible("#launchInspectWindow", function(err, value){
-					expect(err).to.be.null;
-					expect(value).to.be.true;
-				})
-				.buttonClick("#launchInspectWindow > div > div > div.modal-header > button", function(err, value){
+				.waitForVisible("#launchInspectWindow", 10000)
+				.buttonClick("#launchInspectWindow > div > div > div.modal-header > button", function(err){
 					expect(err).to.be.null;
 				})
 				.call(done);
-
 		});
 
 
 		it('should show image list', function(done){
 			client
+				.scroll("#dockerHostTable")
+				.pause(2000)
+				.waitForVisible("#dockerHostTable  tbody > tr > td:nth-child(9)  button.btn.btn-info.dropdown-toggle.btn-sm", 10000)
 				.click("#dockerHostTable  tbody > tr > td:nth-child(9)  button.btn.btn-info.dropdown-toggle.btn-sm", function(err,res){
 					expect(err).to.be.null;
 				})
@@ -130,17 +127,33 @@ describe("docker screen", function(){
 				.waitFor("#imageTableWrapper table", 10000, function(err){
 					expect(err).to.be.null;
 				})
+				.scroll("#imageTableWrapper table", function(err){
+					expect(err).to.be.null;
+				})
 				.call(done);
 		});
-
+		it('should get image info', function(done){
+			client
+				.waitFor("#imageTableWrapper table tbody  tr:nth-child(2)  td:nth-child(2) >  a", 10000, function(err,res){
+					expect(err).to.be.null;
+				})
+				.click("#imageTableWrapper table  tbody  tr:nth-child(2) td:nth-child(2) > a", function(err,res){
+				 		expect(err).to.be.null;
+				})
+				.waitForVisible("#launchInspectWindow", 10000)
+				.pause(1000)
+				.buttonClick("#launchInspectWindow > div > div > div.modal-header > button", function(err){
+					expect(err).to.be.null;
+				})
+				.call(done);
+		});
 
 
 	});
 
 
     after(function(done) {
-        client.end().pause(30000);
+        client.endAll();
         done();
     });
-
 });

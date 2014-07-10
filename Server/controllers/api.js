@@ -24,7 +24,6 @@ router.get('/dockers/list', function(req, res) {
 	});
 });
 
-
 router.post('/dockers', function( req, res){
 	console.log('Saving docker: ', req.body);
 	res.type('json');
@@ -52,7 +51,6 @@ router.post('/dockers', function( req, res){
 	}	
 });
 
-
 router.get("/dockers/:id", function(req,res){
 	res.type('json');
 
@@ -75,7 +73,6 @@ router.get("/dockers/:id", function(req,res){
 	});
 });
 
-
 router.delete("/dockers/:id", function(req, res){
 	console.log("Deleting docker: ", req.params.id);
 	var resData = { errors: null, data:null};
@@ -89,7 +86,6 @@ router.delete("/dockers/:id", function(req, res){
 			}
 	});
 });
-
 
 router.get("/dockers/:id/info", function(req, res){
 
@@ -142,7 +138,6 @@ router.get("/dockers/:id/info", function(req, res){
 		}
 	})
 });
-
 
 router.get("/dockers/:id/infoWithVersion", function(req, res){
 	var resData = { errors: null, data: null};
@@ -377,8 +372,6 @@ router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
 			});
 		}
 	});
-
 })
-
 
 module.exports = router;

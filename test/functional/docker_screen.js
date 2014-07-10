@@ -94,7 +94,6 @@ describe("docker screen", function(){
 					expect(err).to.be.null;
 				})
 				.call(done);
-
 		});
 
 		it('should get container info', function(done){
@@ -109,9 +108,19 @@ describe("docker screen", function(){
 				.buttonClick("#launchInspectWindow > div > div > div.modal-header > button", function(err){
 					expect(err).to.be.null;
 				})
+				.pause(500)
 				.call(done);
 		});
 
+		it('should get process list running inside container', function(done){
+			client
+				.click('#containerTableWrapper  tbody  tr:nth-child(2)  td:nth-child(11) a', function(err,res){
+					expect(err).to.be.null;
+				})
+				.waitFor('#processesTableWrapper', 5000)
+				.scroll('#processesTableWrapper')
+				.call(done);
+		})
 
 		it('should show image list', function(done){
 			client
@@ -132,6 +141,7 @@ describe("docker screen", function(){
 				})
 				.call(done);
 		});
+
 		it('should get image info', function(done){
 			client
 				.waitFor("#imageTableWrapper table tbody  tr:nth-child(2)  td:nth-child(2) >  a", 10000, function(err,res){
@@ -145,7 +155,24 @@ describe("docker screen", function(){
 				.buttonClick("#launchInspectWindow > div > div > div.modal-header > button", function(err){
 					expect(err).to.be.null;
 				})
+				.pause(500)
 				.call(done);
+		});
+
+		it('should logout', function(done){
+			client
+				.click('#wrapper > nav > ul > li > a', function(err, res){
+					expect(err).to.be.null;
+				})
+				.waitForVisible('#wrapper > nav > ul > li > ul > li:nth-child(4) > a', 2000)
+				.click('#wrapper > nav > ul > li > ul > li:nth-child(4) > a', function(err,res){
+					expect(err).to.be.null;
+				})
+				.getTitle(function(err,title){
+					expect(title).to.have.string("Login");
+				})
+				.call(done);
+
 		});
 
 

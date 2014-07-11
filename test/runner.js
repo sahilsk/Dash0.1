@@ -3,9 +3,13 @@ var Mocha = require('mocha'),
     path = require('path');
 
 // First, you need to instantiate a Mocha instance.
-var mocha = new Mocha;
+var mocha = new Mocha({
+    ui: 'bdd',
+    reporter: 'spec',
+    timeout: '20000'
+});;
 
-var testDir = 'test/functional';
+var testDir = 'test/unit/api';
 // Then, you need to use the method "addFile" on the mocha
 // object for each file.
 

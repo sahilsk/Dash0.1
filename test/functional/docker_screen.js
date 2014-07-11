@@ -41,7 +41,7 @@ describe("docker screen", function(){
 
 	});
 
-	describe("GET /", function(){
+	describe("Docker Screen: ", function(){
 		it('should be logged in', function(done){
 		 	client.getTitle( function(err, title){
 		 		console.log("Page title: ", title);
@@ -87,7 +87,7 @@ describe("docker screen", function(){
 				.click('#dockerHostTable  tbody > tr  td:nth-child(9)   ul  li:nth-child(1)  a', function(err,res){
 					expect(err).to.be.null;
 				})
-				.waitFor("#containerTableWrapper table", 10000, function(err){
+				.waitFor("#containerTableWrapper table", 20000, function(err){
 					expect(err).to.be.null;
 				})
 				.scroll("#containerTableWrapper table", function(err){

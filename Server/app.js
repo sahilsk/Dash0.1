@@ -34,7 +34,6 @@ app.use("/build", express.static(path.join(__dirname, '../Client/build')));
 
 //Authentication :{ username: admin, password: admin123 }
 app.use( function( req, res, next){
-    console.log("Request Url: ", req.url);
     if( req.url === "/login"){
         if( req.session.hasOwnProperty("user") && req.session.user !== null ){
             res.redirect("/");
@@ -47,7 +46,6 @@ app.use( function( req, res, next){
         if( req.session.hasOwnProperty("user") && req.session.user !== null ){
             next();
         }else{
-            console.log("Private Area");
             res.redirect("/login");
         }
     }

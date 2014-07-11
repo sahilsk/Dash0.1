@@ -1,3 +1,5 @@
+'use strict'
+
 var _ = require("underscore");
 var uuid = require('node-uuid');
 var redisClient = require("../db");
@@ -93,10 +95,9 @@ var Docklet = {
 				return;
 			}	
 
-
 			this.validate(obj, function(err, pass){
 				if(!pass){
-					util.log("Unable to save. Validation failed");
+					util.log("Unable to save. Validation failed.");
 					console.log("Validation Errors: ", err);
 					callback(err, null);
 					return;
@@ -108,11 +109,11 @@ var Docklet = {
 						.zadd(TABLE_NAME.plural, timestamp, obj.id) // SCREENS-ID SET 
 						.hmset( TABLE_NAME.singular+":"+obj.id, obj)
 						.exec( function(err, replies){
-							util.log("MULTI got " + replies.length + " replies");
+							/*util.log("MULTI got " + replies.length + " replies");
 							replies.forEach(function (reply, index) {
 								util.log("Reply " + index + ": " + reply.toString());
-							});
-							callback(err, obj )
+							});*/
+							callback(err, obj );
 							//redisClient.end();
 						});				
 
@@ -144,13 +145,13 @@ var Docklet = {
 			.del( TABLE_NAME.singular +":"+id)
 			.zrem( TABLE_NAME.plural , id)
 			.exec( function(err, replies){
-				util.log("MULTI got " + replies.length + " replies");
+				/*util.log("MULTI got " + replies.length + " replies");
 				replies.forEach(function (reply, index) {
 					util.log("Reply " + index + ": " + reply.toString());
-				});
+				});*/
 				callback(err);
 				//redisClient.end();
-			});
+			})	;
 	}
 
 }

@@ -24,8 +24,8 @@ module.exports  = app.controller('DockerProcessCtrl',
 					return;
 				}
 				ContainerFactory.getProcesses( containerId).then( function(res){
-					if( res.data.error){
-						console.log('Error fetching processes: ', res.data.error)
+					if( res.data.errors){
+						console.log('Error fetching processes: ', res.data.errors)
 					}else{
 						$scope.processes = res.data.data;
 				 		console.log("Processes: ", res.data.data);

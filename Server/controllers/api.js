@@ -6,49 +6,48 @@ var Docklet = require("../models/docklet.js");
 var _ = require("underscore");
 var async = require("async");
 
-router.get('/dockers/list', function(req, res) {
-	var data = {};
-	Docklet.all( function(err, list){
-		if(err){
-			console.log("Error listing docker: ", err)
-			res.json(err);
-			data.status = 500;
-			data.errors =  [].push(err);
-		}else{
-			data.status = 200;
-			data.rows =  list;
-			console.log( data);
 
-			res.json(data);
-		}
-	});
-});
+var getDockers = function(req, res) {
+					var data = {};
+					Docklet.all( function(err, list){
+						if(err){
+							console.log("Error listing docker: ", err)
+							res.json(err);
+							data.status = 500;
+							data.errors =  [].push(err);
+						}else{
+							data.status = 200;
+							data.rows =  list;
+							console.log( data);
+
+							res.json(data);
+						}
+					});
+				}
+
+router.get('/dockers',getDockers);
+
+router.get('/dockers/list', getDockers);
 
 router.post('/dockers', function( req, res){
-	console.log('Saving docker: ', req.body);
+	//console.log('Saving docker: ', req.body);
 	res.type('json');
-
 	var resData = { errors: null, data: null};
-	if(! req.body.id){
-		resData.errors = "Invalid request";
-		res.send(resData).end();
-	}
-	try{
-		Docklet.save(req.body, function(err, docklet){
-			if(err){
-				resData.errors = err;
-			}else
-				{
-					console.log("Docklet created successfully");
-					resData.data =docklet;
-				}
-			res.send(resData).end();
-		})
-	} catch(err){
-		console.log("Error: ", err);
-		resData.errors = err;
-		res.send( resData ).end();
-	}	
+
+	Docklet.save(req.body, function(err, docklet){
+		if(err){
+			resData.errors = err;
+			res.send(406, resData).end();
+			return;
+		}else{
+			console.log("Docklet created successfully");
+			resData.data = docklet;
+			res.send(201,resData).end();
+			return;
+		}
+		
+	});
+
 });
 
 router.get("/dockers/:id", function(req,res){
@@ -250,16 +249,14 @@ router.get("/dockers/:id/images/:imageId", function(req, res){
 			res.send( resData ).end();	
 
 		}else{
-
-			var resData = { error: null, data:null};
 			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
 
 			var image = docker.getImage( imageId);
 			image.inspect( function(err, data ){
 				if(err){
-					resData.errors = err;
-					res.send( resData ).end();	
-				}{
+					resData.errors = err.reason;
+					res.send( err.statusCode, resData ).end();	
+				}else{
 					resData.data = data;
 					console.log( resData);
 					res.send( resData ).end();	
@@ -332,9 +329,9 @@ router.get("/dockers/:id/containers/:containerId", function(req, res){
 			var container = docker.getContainer( containerId);
 			container.inspect( function(err, data ){
 				if(err){
-					resData.errors = err;
-					res.send( resData ).end();	
-				}{
+					resData.errors = err.reason;
+					res.send( err.statusCode, resData ).end();	
+				}else{
 					resData.data = data;
 					console.log( resData);
 					res.send( resData ).end();	
@@ -354,20 +351,20 @@ router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
 		if( err){
 			console.log("Error caught: " + error);
 			resData.errors = error;
-			res.send( resData ).end();	
+			res.send(500, resData ).end();	
 
 		}else{
 			var docker = new require('dockerode')({host: "http://"+dockerHost.host, port: dockerHost.port});
 			var container = docker.getContainer( containerId);
-			container.top( function(err,processes){
+			container.top( function(err, processes){
 				if(err) {
 					console.log("Error caught: " + err);
-					resData.errors = err;
-					res.send( resData ).end();	
+					resData.errors = err.reason;
+					res.send(err.statusCode, resData ).end();	
 				}else{
 					console.log("processes: ", processes);
 					resData.data = processes;
-					res.send( resData ).end();	
+					res.send(200, resData ).end();	
 				}
 			});
 		}

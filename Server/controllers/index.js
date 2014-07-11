@@ -15,7 +15,7 @@ router.get('/login', function( req, res){
 });
 
 router.post('/login', function( req, res){
-	console.log("authenticating....");
+	//console.log("authenticating....");
 	if( Auth.login( req.body ) ){
 		req.session.user = req.body;
 		res.redirect("/");

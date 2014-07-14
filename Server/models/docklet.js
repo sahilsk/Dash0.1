@@ -8,6 +8,8 @@ var async = require("async");
 var util = require("util");	
 var Validator = require("../lib/validation.js");
 
+var logger = require("../../config/logger");
+
 /*
 
 ###########  Add New docklet
@@ -98,7 +100,7 @@ var Docklet = {
 			this.validate(obj, function(err, pass){
 				if(!pass){
 					util.log("Unable to save. Validation failed.");
-					console.log("Validation Errors: ", err);
+					logger.info("Validation Errors: ", err);
 					callback(err, null);
 					return;
 				}else{

@@ -3,6 +3,7 @@
 var express = require('express');
 var router = express.Router();
 var Docklet = require("../models/docklet.js");
+var logger = require("../../config/logger")
 
 
 
@@ -10,10 +11,10 @@ router.get('/', function(req, res){
 
 	Docklet.all( function(err, list){
 		if(err){
-			console.log("Error listing docker: ", err)
+			logger.error( err)
 		}else{
-			console.log( "Req.url: " + req.url);
-			console.log( list);
+			logger.debug( "Req.url: " + req.url);
+			logger.debug( list);
 
 			res.render('dockers/index', { title:"Dockers"});
 		}

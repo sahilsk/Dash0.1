@@ -3,7 +3,7 @@ var session = require('express-session');
 
 var path = require('path');
 var favicon = require('static-favicon');
-var logger = require('morgan');
+var serverLogger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var docker = require("./controllers/dockers");
@@ -11,6 +11,8 @@ var index = require("./controllers/index");
 var api = require("./controllers/api");
 var config = require("config");
 
+var logger = require("../config/logger");
+logger.info("Instantiated...");
 
 var app = express();
 
@@ -22,7 +24,7 @@ app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
 app.use(favicon());
-app.use(logger('dev'));
+app.use(serverLogger('default'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
@@ -41,7 +43,7 @@ app.use( function( req, res, next){
             next();
         }
     }else{
-        //console.log("Checking authentication...", config);
+        logger.info("Checking authentication...", config);
 
         if( req.session.hasOwnProperty("user") && req.session.user !== null ){
             next();

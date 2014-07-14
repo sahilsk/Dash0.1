@@ -1,6 +1,10 @@
 var client = require('../config/client').client;
 var expect = require('chai').expect;
- 
+
+var server = require('../server');
+var app = require('../../Server/app');
+var hostname = "http://localhost:" + app.get('port');
+
 
 describe("auth", function(){
 	before( function(done){
@@ -10,7 +14,7 @@ describe("auth", function(){
 	describe("GET /", function(){
 		it('should redirect to /login', function(done){
 			client
-				.url("http://localhost:3000/dockers")
+				.url( hostname + "/dockers")
 				.getTitle( function(err, title){
 		 			expect(title).to.have.string("Login");
 		 			done();

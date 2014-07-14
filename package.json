@@ -46,7 +46,8 @@
     "redis": "~0.10.3",
     "jquery": "~2.1.1",
     "browserify-shim": "~3.6.0",
-    "express-session": "~1.6.0"
+    "express-session": "~1.6.0",
+    "tracer": "~0.7.1"
   },
   "browser": {
     "jQuery": "./Server/public/bower_components/jquery/dist/jquery.js",

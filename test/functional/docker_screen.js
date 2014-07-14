@@ -1,10 +1,12 @@
 var client = require('../config/client').client;
 var expect = require('chai').expect;
- 
+ var server = require('../server');
+var app = require('../../Server/app');
+var hostname = "http://localhost:" + app.get('port');
 
 describe("docker screen", function(){
 	before( function(done){
-        client.init().url("http://localhost:3000/", function(err){
+        client.init().url(hostname, function(err){
         	expect(err).to.be.null;
         });;
 

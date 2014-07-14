@@ -5,21 +5,21 @@ var router = express.Router();
 var Docklet = require("../models/docklet.js");
 var _ = require("underscore");
 var async = require("async");
+var logger = require("../../config/logger");
 
 
 var getDockers = function(req, res) {
 					var data = {};
 					Docklet.all( function(err, list){
 						if(err){
-							console.log("Error listing docker: ", err)
+							logger.error(err);
 							res.json(err);
 							data.status = 500;
 							data.errors =  [].push(err);
 						}else{
 							data.status = 200;
 							data.rows =  list;
-							console.log( data);
-
+							logger.debug(data);
 							res.json(data);
 						}
 					});
@@ -30,7 +30,7 @@ router.get('/dockers',getDockers);
 router.get('/dockers/list', getDockers);
 
 router.post('/dockers', function( req, res){
-	//console.log('Saving docker: ', req.body);
+	logger.info('Saving docker: ', req.body);
 	res.type('json');
 	var resData = { errors: null, data: null};
 
@@ -40,7 +40,7 @@ router.post('/dockers', function( req, res){
 			res.send(406, resData).end();
 			return;
 		}else{
-			console.log("Docklet created successfully");
+			logger.info("Docklet created successfully");
 			resData.data = docklet;
 			res.send(201,resData).end();
 			return;
@@ -61,7 +61,7 @@ router.get("/dockers/:id", function(req,res){
 
 	Docklet.find(req.params.id, function( err, obj){
 			if( err){
-				console.log("error caught: " + error);
+				logger.error(error);
 				resData.errors = error;
 				res.send( resData).end();		
 
@@ -73,14 +73,14 @@ router.get("/dockers/:id", function(req,res){
 });
 
 router.delete("/dockers/:id", function(req, res){
-	console.log("Deleting docker: ", req.params.id);
+	logger.info("Deleting docker: ", req.params.id);
 	var resData = { errors: null, data:null};
 	Docklet.destroy(req.params.id, function(err){
 			if(!err){
 				res.send( resData ).end();
 			}else{
 				resData.errors = err;
-				console.log(err);
+				logger.error(err);
 				res.send( resData);
 			}
 	});
@@ -97,13 +97,13 @@ router.get("/dockers/:id/info", function(req, res){
 	Docklet.find(req.params.id, function( err, obj){
 		res.type('json');
 		if( err){
-			console.log("Error finding docker: " + error);
-			resData.errors = error;
+			logger.error( err);
+			resData.errors = err;
 			res.send(resData).end();
 			return;		
 
 		}else{
-			console.log("Docker found: ", obj);
+			logger.info("Docker found: ", obj);
 			var docker = new require('dockerode')({host: "http://"+obj.host, port: obj.port});
 			var healthCheck = require("../lib/healthCheck");
 
@@ -111,20 +111,17 @@ router.get("/dockers/:id/info", function(req, res){
 			try{
 				docker.info(function(err, info) {
 					if(err) {
-						console.log("error caught(/dockers/:id/info): " + err);
+						logger.error(err);
 						resData.errors = err;
 						res.send(resData).end();	
 						return;
 					}else{
-						console.log("info: ", info);
+						logger.info(info);
 						resData.data = info;
 						healthCheck("http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
 							resData.data.HealthStatus = isOK;
 							res.type("json");
-							//console.log( resData);
-
 							res.send( resData);
-							//res.end();		
 							return;	
 						} );					
 					}
@@ -150,13 +147,13 @@ router.get("/dockers/:id/infoWithVersion", function(req, res){
 
 	Docklet.find(req.params.id, function( err, obj){
 		if( err){
-			console.log("Error finding docker: " + error);
+			logger.error(err);
 			resData.errors = error;
 			res.send(resData).end();
 			return;
 
 		}else{
-			console.log("Docker found: ", obj);
+			logger.info( obj);
 			var docker = new require('dockerode')({host: "http://"+obj.host, port: obj.port});
 			var healthCheck = require("../lib/healthCheck");
 			
@@ -167,7 +164,7 @@ router.get("/dockers/:id/infoWithVersion", function(req, res){
 						if(err) {
 							callback(err, info);
 						}else{
-							console.log("info: ", info);
+							logger.info(info);
 							resData.data = info;
 							healthCheck( "http://"+obj.host+":" + obj.port+ obj.healthCheckPath , function(error, isOK){
 								info.HealthStatus = isOK;
@@ -184,7 +181,7 @@ router.get("/dockers/:id/infoWithVersion", function(req, res){
 			},
 			function(err, results) {
 			    if(err){
-					console.log("Error querying docker :" + err);
+					logger.error( err);
 					resData.errors = err;
 					res.send( resData ).end();
 			    }else{
@@ -210,8 +207,8 @@ router.get("/dockers/:id/images", function(req, res){
 
 	Docklet.find(id, function( err, obj){
 		if( err){
-			console.log("Error caught: " + error);
-			resData.errors = error;
+			logger.error( err);
+			resData.errors = err;
 			res.send( resData ).end();	
 
 		}else{
@@ -219,12 +216,12 @@ router.get("/dockers/:id/images", function(req, res){
 
 		 	docker.listImages(listOpts, function(err, images) {
 				if(err){
-					console.log("Error querying docker :" + err);
+					logger.error( err);
 					resData.errors = err;
 					res.send( resData ).end();
 					return;
 			    }else{
-			    	console.log( images);
+			    	logger.info( images);
 			    	resData.data = images;
 			    	res.send( resData ).end();
 			    	return;
@@ -244,8 +241,8 @@ router.get("/dockers/:id/images/:imageId", function(req, res){
 
 	Docklet.find(id, function( err, dockerHost){
 		if( err){
-			console.log("Error caught: " + error);
-			resData.errors = error;
+			logger.error(err);
+			resData.errors = err;
 			res.send( resData ).end();	
 
 		}else{
@@ -258,7 +255,7 @@ router.get("/dockers/:id/images/:imageId", function(req, res){
 					res.send( err.statusCode, resData ).end();	
 				}else{
 					resData.data = data;
-					console.log( resData);
+					logger.info( resData);
 					res.send( resData ).end();	
 				}
 			});
@@ -285,11 +282,11 @@ router.get("/dockers/:id/containers", function(req,res){
 	if( typeof(listOpts.limit) !== "undefined" )
 		listOpts.limit = parseInt( listOpts.limit);
 	
-	console.log( listOpts);
+	logger.info(listOpts);
 	Docklet.find(req.params.id, function( err, dockerHost){
 		if( err){
-			console.log("Error caught: " + error);
-			resData.errors = error;
+			logger.error(err);
+			resData.errors = err;
 			res.send( resData ).end();	
 
 		}else{
@@ -297,12 +294,12 @@ router.get("/dockers/:id/containers", function(req,res){
 							({host: "http://"+dockerHost.host, port: dockerHost.port});
 			docker.listContainers( listOpts, function(err, containers) {
 				if(err) {
-					console.log("Failed to get container list: ", err);
+					logger.error("Failed to get container list: %s", err);
 					resData.errors = err;
 					res.send( resData ).end();
 					return;
 				}else{
-					console.log("containers: ", containers);
+					logger.debug("containers: %j", containers);
 					resData.data = containers;
 					res.send(resData).end();
 				}
@@ -319,8 +316,8 @@ router.get("/dockers/:id/containers/:containerId", function(req, res){
 
 	Docklet.find(id, function( err, dockerHost){
 		if( err){
-			console.log("Error caught: " + error);
-			resData.errors = error;
+			logger.error( err);
+			resData.errors = err;
 			res.send( resData ).end();	
 
 		}else{
@@ -333,7 +330,7 @@ router.get("/dockers/:id/containers/:containerId", function(req, res){
 					res.send( err.statusCode, resData ).end();	
 				}else{
 					resData.data = data;
-					console.log( resData);
+					logger.info( resData);
 					res.send( resData ).end();	
 				}
 			});
@@ -349,8 +346,8 @@ router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
 
 	Docklet.find( id, function( err, dockerHost){
 		if( err){
-			console.log("Error caught: " + error);
-			resData.errors = error;
+			logger.error(err);
+			resData.errors = err;
 			res.send(500, resData ).end();	
 
 		}else{
@@ -358,11 +355,11 @@ router.get( "/dockers/:id/containers/:containerId/top", function(req, res){
 			var container = docker.getContainer( containerId);
 			container.top( function(err, processes){
 				if(err) {
-					console.log("Error caught: " + err);
+					logger.error( err);
 					resData.errors = err.reason;
 					res.send(err.statusCode, resData ).end();	
 				}else{
-					console.log("processes: ", processes);
+					logger.debug("processes: %j", processes);
 					resData.data = processes;
 					res.send(200, resData ).end();	
 				}

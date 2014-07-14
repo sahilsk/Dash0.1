@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var logger = require("../../config/logger");
 var Auth = require("./auth");
 
 /* GET home page. */
@@ -15,12 +15,13 @@ router.get('/login', function( req, res){
 });
 
 router.post('/login', function( req, res){
-	//console.log("authenticating....");
 	if( Auth.login( req.body ) ){
 		req.session.user = req.body;
+		logger.info("user authenticated.");
 		res.redirect("/");
 	}else{
 		res.redirect("/login");
+		logger.info("Invalid credentials....");
 	};
 
 });
@@ -29,10 +30,10 @@ router.post('/login', function( req, res){
 router.get('/logout', function(req, res){
 	req.session.destroy(function(err) {
 		if( err){
-			console.log("Failed to destroy user session");
+			logger.error("Failed to destroy user session");
 		}else{
-	  		console.log("Destroyed user session")
-	  		console.log("user logout successfully") ;
+	  		logger.info("Destroyed user session");
+	  		logger.info("user logout successfully") ;
 			res.redirect('/login');
 		}
 	})
